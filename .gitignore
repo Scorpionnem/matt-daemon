@@ -1,0 +1,5 @@
+MattDaemon
+obj/
+*.o
+*.d
+matt_daemon.log
