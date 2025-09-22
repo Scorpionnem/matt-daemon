@@ -6,14 +6,15 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:06:35 by mbatty            #+#    #+#             */
-/*   Updated: 2025/09/22 15:01:42 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/09/22 16:26:17 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Tintin_reporter.hpp"
 #include "MattDaemon.hpp"
+#include "Server.hpp"
 
-# define PROD 0
+#define PROD 0
 
 int	main(void)
 {
@@ -29,20 +30,27 @@ int	main(void)
 		Tintin_reporter::log(LogType::INFO, "Starting.");
 		
 		MattDaemon	mattDaemon;
+		Server		server;
 	
 		mattDaemon.start();
-	
-		int i = 0;
+		try {
+			server.start();
+		} catch (const std::exception &e) {
+			Tintin_reporter::log(LogType::ERROR, "Failed to start server.");
+			mattDaemon.stop();
+			return (1);
+		}
 
-		while (i++ < 10)
+		while (1)
 		{
 			if (mattDaemon.receivedSignal())
 				break ;
 
-			Tintin_reporter::log(LogType::LOG, "Logging");
-			sleep(1);
+			if (!server.receive())
+				break ;
 		}
 
+		server.stop();
 		mattDaemon.stop();
 	
 		Tintin_reporter::log(LogType::INFO, "Quitting.");
