@@ -5,7 +5,7 @@ INCLUDES = -I includes
 
 NAME = MattDaemon
 
-SRCS = src/main.cpp
+SRCS = src/main.cpp src/MattDaemon.cpp
 
 OBJDIR = obj
 OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
