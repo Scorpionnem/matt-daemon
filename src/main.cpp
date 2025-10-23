@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:06:35 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 14:04:27 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 14:18:23 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	startServer(MattDaemon &mattDaemon, Server &server)
 	} catch (const std::exception &e) {
 		Tintin_reporter::log(LogType::ERROR, "Failed to start server.");
 		mattDaemon.stop();
-		exit(1);
+		throw ;
 	}
 }
 
@@ -50,6 +50,13 @@ int	main(void)
 	#endif
 
 	try {
+		Tintin_reporter::getInstance();
+	} catch (const std::exception &e) {
+		std::cerr << e.what() << std::endl;
+		return (1);
+	}
+
+	try {
 		MattDaemon	mattDaemon;
 		Server		server;
 	
@@ -63,6 +70,6 @@ int	main(void)
 		mattDaemon.stop();
 		Tintin_reporter::log(LogType::INFO, "Quitting.");
 	} catch (const std::exception &e) {
-		exit(1);
+		return (1);
 	}
 }

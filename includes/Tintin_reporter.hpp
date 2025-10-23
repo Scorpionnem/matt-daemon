@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 13:50:46 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 14:19:03 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <iomanip>
 # include <exception>
 # include <filesystem>
+# include <sys/stat.h>
 
 // Path to log directory
 # define VAR_LOG_PATH			"/var/log/"

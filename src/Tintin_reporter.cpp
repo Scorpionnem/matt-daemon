@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 13:35:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 13:49:13 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 14:20:21 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,10 @@ Tintin_reporter::Tintin_reporter()
 {
 	std::string logFilePath = MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
 
-	std::filesystem::create_directory(MATT_DAEMON_LOG_PATH);
+	
+	if (!std::filesystem::exists(MATT_DAEMON_LOG_PATH))
+		if (mkdir(MATT_DAEMON_LOG_PATH, 0755) == -1)
+			throw std::runtime_error("Failed to create directory: " MATT_DAEMON_LOG_PATH);
 	_file.open(logFilePath, std::ios::app);
 	if (!_file.is_open())
 		throw std::runtime_error("Failed to open log file: " + logFilePath);

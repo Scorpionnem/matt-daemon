@@ -1,5 +1,5 @@
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++17
+CXXFLAGS = -Wall -Wextra -Werror -MMD -MP -g -std=c++17
 
 INCLUDES = -I includes
 
