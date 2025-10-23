@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/09/22 16:26:10 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 13:57:29 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,9 @@ bool	MattDaemon::receivedSignal()
 
 void	MattDaemon::start()
 {
-	_daemonize();
 	_lockFile();
+	Tintin_reporter::log(LogType::INFO, "Starting.");
+	_daemonize();
 }
 
 void	MattDaemon::stop()
@@ -56,7 +57,7 @@ void	MattDaemon::_daemonize()
 		exit(0);
 	if (pid < 0)
 		exit(1);
-	
+
 	setsid();
 
 	pid = fork();
@@ -89,12 +90,12 @@ void	MattDaemon::_lockFile()
 	_lockFD = open(LOCK_FILE, O_RDWR | O_CREAT, 0640);
 	if (_lockFD < 0)
 	{
-		Tintin_reporter::log(LogType::ERROR, "Failed to open lock file");
+		std::cerr << "Failed to open lock file" << std::endl;
 		exit(1);
 	}
 	if (flock(_lockFD, LOCK_EX | LOCK_NB) < 0)
 	{
-		Tintin_reporter::log(LogType::ERROR, "A daemon is already running");
+		std::cerr << "An instance of MattDaemon is already running" << std::endl;
 		exit(1);
 	}
 

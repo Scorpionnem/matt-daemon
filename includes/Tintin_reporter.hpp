@@ -6,24 +6,32 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/09/21 19:30:38 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 13:50:46 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TINTIN_REPORTER_HPP
 # define TINTIN_REPORTER_HPP
 
-// [ DD / MM / YYYY - HH : MM : SS]
-
 # include <fstream>
 # include <iostream>
 # include <ctime>
 # include <iomanip>
 # include <exception>
+# include <filesystem>
 
-///var/log/matt_daemon/
-# define LOG_PATH "matt_daemon.log"
+// Path to log directory
+# define VAR_LOG_PATH			"/var/log/"
+// Path to matt_daemon log directory inside of logs
+# define MATT_DAEMON_LOG_PATH	"matt_daemon/"
+// Name of the log file without the timestamp
+# define LOG_PATH				"matt_daemon_"
+// Extension format of the log file
+# define LOG_EXTENSION			".log"
 
+/*
+	Type given to Tintin_reporter, used to add the "header" in the logs
+*/
 enum class LogType
 {
 	LOG,
@@ -32,69 +40,40 @@ enum class LogType
 	NONE,
 };
 
+/*
+	Logger for the program, saves and logs any log
+*/
 class	Tintin_reporter
 {
 	public:
-		static void	log(const std::string &str)
-		{
-			log(LogType::NONE, str);
-		}
-		static void	log(LogType type, const std::string &str)
-		{
-			std::string	header;
+		/*
+			Calls log with LogType::NONE
+		*/
+		static void	log(const std::string &str);
+		/*
+			Logs a message with LogType "header" ([ LOG ], [ INFO ] ...)
+		*/
+		static void	log(LogType type, const std::string &str);
 
-			switch (type)
-			{
-				case LogType::LOG:
-					header = "[ LOG ] - ";
-					break ;
-				case LogType::INFO:
-					header = "[ INFO ] - ";
-					break ;
-				case LogType::ERROR:
-					header = "[ ERROR ] - ";
-					break ;
-				default :
-					header = " ";
-					break ;
-			}
-
-			getInstance()._log(header + str);
-		}
-		
-		static Tintin_reporter& getInstance()
-		{
-			static Tintin_reporter	instance;
-			return (instance);
-		}
+		/*
+			Returns instance of Tintin_reporter singleton
+		*/
+		static Tintin_reporter& getInstance();
 	private:
-		Tintin_reporter()
-		{
-			std::string logFilePath = LOG_PATH;
-
-			_file.open(logFilePath, std::ios::app);
-			if (!_file.is_open())
-				throw std::runtime_error("Failed to open log file: " + logFilePath);
-		}
-		~Tintin_reporter()
-		{
-			_file.close();
-		}
-
-		void	_log(const std::string &str)
-		{
-			_file << _getTimeString() << " " << str << std::endl;
-		}
+		void	_log(const std::string &str);
 		
-		std::string _getTimeString()
-		{
-			std::time_t t = std::time(0);
-			std::tm* tm = std::localtime(&t);
-			char buf[64];
+		Tintin_reporter();
+		~Tintin_reporter();
+
+		/*
+			Returns the timestamp in this format [D/M/Y-H:m:s]
+		*/
+		std::string	_getLogTimeString();
+		/*
+			Returns the timestamp in this format D_M_Y_H_m_s
+		*/
+		std::string	_getLogFileTimeString();
 		
-			std::strftime(buf, sizeof(buf), "[%d/%m/%Y-%H:%M:%S]", tm);
-			return std::string(buf);
-		}
 		std::ofstream	_file;
 };
 
