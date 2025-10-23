@@ -6,11 +6,13 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 13:35:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 14:20:21 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 14:24:05 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Tintin_reporter.hpp"
+
+// LOG FUNCTIONS
 
 void	Tintin_reporter::log(const std::string &str)
 {
@@ -45,6 +47,10 @@ void	Tintin_reporter::_log(const std::string &str)
 	_file << _getLogTimeString() << " " << str << std::endl;
 }
 
+
+// TINTIN_REPORTER INSTANCES
+
+
 Tintin_reporter& Tintin_reporter::getInstance()
 {
 	static Tintin_reporter	instance;
@@ -68,6 +74,10 @@ Tintin_reporter::~Tintin_reporter()
 {
 	_file.close();
 }
+
+
+// TIME FORMATS
+
 
 std::string	Tintin_reporter::_getLogFileTimeString()
 {
