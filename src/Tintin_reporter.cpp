@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 13:35:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 14:24:05 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 15:12:39 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	Tintin_reporter::log(LogType type, const std::string &str)
 			break ;
 	}
 
-	getInstance()._log(header + str);
+	_log(header + str);
 }
 
 void	Tintin_reporter::_log(const std::string &str)
@@ -47,27 +47,9 @@ void	Tintin_reporter::_log(const std::string &str)
 	_file << _getLogTimeString() << " " << str << std::endl;
 }
 
-
-// TINTIN_REPORTER INSTANCES
-
-
-Tintin_reporter& Tintin_reporter::getInstance()
-{
-	static Tintin_reporter	instance;
-	return (instance);
-}
-
 Tintin_reporter::Tintin_reporter()
 {
-	std::string logFilePath = MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
-
 	
-	if (!std::filesystem::exists(MATT_DAEMON_LOG_PATH))
-		if (mkdir(MATT_DAEMON_LOG_PATH, 0755) == -1)
-			throw std::runtime_error("Failed to create directory: " MATT_DAEMON_LOG_PATH);
-	_file.open(logFilePath, std::ios::app);
-	if (!_file.is_open())
-		throw std::runtime_error("Failed to open log file: " + logFilePath);
 }
 
 Tintin_reporter::~Tintin_reporter()

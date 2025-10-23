@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 13:57:29 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 15:33:28 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,35 +20,25 @@ static void	sigHandler(int sig)
 	g_signal = sig;
 }
 
+bool	MattDaemon::_checkSignals()
+{
+	if (g_signal != -1)
+	{
+		_logger.log(LogType::INFO, "Received signal: " + std::to_string(g_signal));
+		return (true);
+	}
+	return (false);
+}
+
 void	MattDaemon::_setupSignals()
 {
 	signal(SIGINT, sigHandler);
 	signal(SIGTERM, sigHandler);
 }
 
-bool	MattDaemon::receivedSignal()
-{
-	if (g_signal < 0)
-		return (false);
-	Tintin_reporter::log(LogType::INFO, "Received signal: " + std::to_string(g_signal));
-	return (true);
-}
-
-void	MattDaemon::start()
-{
-	_lockFile();
-	Tintin_reporter::log(LogType::INFO, "Starting.");
-	_daemonize();
-}
-
-void	MattDaemon::stop()
-{
-	_unlockFile();
-}
-
 void	MattDaemon::_daemonize()
 {
-	Tintin_reporter::log(LogType::INFO, "Entering daemon mode.");
+	_logger.log(LogType::INFO, "Entering daemon mode.");
 
 	pid_t	pid;
 
@@ -68,14 +58,14 @@ void	MattDaemon::_daemonize()
 
 	if (chdir("/") == -1)
 	{
-		Tintin_reporter::log(LogType::INFO, "Failed to mount to '/'" + std::to_string(getpid()));
+		_logger.log(LogType::INFO, "Failed to mount to '/'" + std::to_string(getpid()));
 		exit(1);
 	}
 
 	_setupSignals();
 	_closeFDs();
 
-	Tintin_reporter::log(LogType::INFO, "Entered daemon mode, PID: " + std::to_string(getpid()));
+	_logger.log(LogType::INFO, "Entered daemon mode, PID: " + std::to_string(getpid()));
 }
 
 void	MattDaemon::_closeFDs()
@@ -85,26 +75,20 @@ void	MattDaemon::_closeFDs()
 	close(STDERR_FILENO);
 }
 
-void	MattDaemon::_lockFile()
+void	MattDaemon::_lock()
 {
 	_lockFD = open(LOCK_FILE, O_RDWR | O_CREAT, 0640);
 	if (_lockFD < 0)
-	{
-		std::cerr << "Failed to open lock file" << std::endl;
-		exit(1);
-	}
+		throw std::runtime_error("Failed to open lock file");
 	if (flock(_lockFD, LOCK_EX | LOCK_NB) < 0)
-	{
-		std::cerr << "An instance of MattDaemon is already running" << std::endl;
-		exit(1);
-	}
+		throw std::runtime_error("Failed to lock " LOCK_FILE);
 
-	Tintin_reporter::log(LogType::INFO, std::string("Locked ") + LOCK_FILE);
+	_logger.log(LogType::INFO, std::string("Locked ") + LOCK_FILE);
 }
 
-void	MattDaemon::_unlockFile()
+void	MattDaemon::_unlock()
 {
 	close(_lockFD);
 	remove(LOCK_FILE);
-	Tintin_reporter::log(LogType::INFO, std::string("Unlocked ") + LOCK_FILE);
+	_logger.log(LogType::INFO, std::string("Unlocked ") + LOCK_FILE);
 }

@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 14:19:03 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 15:13:03 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,25 +47,31 @@ enum class LogType
 class	Tintin_reporter
 {
 	public:
+		Tintin_reporter();
+		~Tintin_reporter();
+		
+		void	init()
+		{
+			std::string logFilePath = MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
+	
+			if (!std::filesystem::exists(MATT_DAEMON_LOG_PATH))
+				if (mkdir(MATT_DAEMON_LOG_PATH, 0755) == -1)
+					throw std::runtime_error("Failed to create directory: " MATT_DAEMON_LOG_PATH);
+			_file.open(logFilePath, std::ios::app);
+			if (!_file.is_open())
+				throw std::runtime_error("Failed to open log file: " + logFilePath);
+		}
 		/*
 			Calls log with LogType::NONE
 		*/
-		static void	log(const std::string &str);
+		void	log(const std::string &str);
 		/*
 			Logs a message with LogType "header" ([ LOG ], [ INFO ] ...)
 		*/
-		static void	log(LogType type, const std::string &str);
-
-		/*
-			Returns instance of Tintin_reporter singleton
-		*/
-		static Tintin_reporter& getInstance();
+		void	log(LogType type, const std::string &str);
 	private:
 		void	_log(const std::string &str);
 		
-		Tintin_reporter();
-		~Tintin_reporter();
-
 		/*
 			Returns the timestamp in this format [D/M/Y-H:m:s]
 		*/
