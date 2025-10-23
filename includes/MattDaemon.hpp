@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:36:38 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 15:35:36 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 15:39:51 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,9 @@ class	MattDaemon
 		bool	_init()
 		{
 			try {
-				_logger.init();
 				_lock();
+				_logger.init();
+				_logger.log(LogType::INFO, "Locked " LOCK_FILE);
 			} catch (const std::exception &e) {
 				std::cerr << "Error: " << e.what() << std::endl;
 				return (false);

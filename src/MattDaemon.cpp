@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 15:33:28 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 15:38:41 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,6 @@ void	MattDaemon::_lock()
 		throw std::runtime_error("Failed to open lock file");
 	if (flock(_lockFD, LOCK_EX | LOCK_NB) < 0)
 		throw std::runtime_error("Failed to lock " LOCK_FILE);
-
-	_logger.log(LogType::INFO, std::string("Locked ") + LOCK_FILE);
 }
 
 void	MattDaemon::_unlock()
