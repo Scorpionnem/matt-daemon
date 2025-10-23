@@ -6,14 +6,27 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 13:35:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 15:12:39 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 18:06:15 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Tintin_reporter.hpp"
 
-// LOG FUNCTIONS
 
+void	Tintin_reporter::init()
+{
+	std::string logFilePath = MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
+
+	if (!std::filesystem::exists(MATT_DAEMON_LOG_PATH))
+		if (mkdir(MATT_DAEMON_LOG_PATH, 0755) == -1)
+			throw std::runtime_error("Failed to create directory: " MATT_DAEMON_LOG_PATH);
+	_file.open(logFilePath, std::ios::app);
+	if (!_file.is_open())
+		throw std::runtime_error("Failed to open log file: " + logFilePath);
+}
+
+
+// LOG FUNCTIONS
 void	Tintin_reporter::log(const std::string &str)
 {
 	log(LogType::NONE, str);
@@ -59,8 +72,6 @@ Tintin_reporter::~Tintin_reporter()
 
 
 // TIME FORMATS
-
-
 std::string	Tintin_reporter::_getLogFileTimeString()
 {
 	std::time_t t = std::time(0);

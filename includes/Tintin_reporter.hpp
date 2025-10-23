@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 15:13:03 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/10/23 18:10:43 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,18 @@
 */
 enum class LogType
 {
+	// Used when logging user messages
 	LOG,
+	// Used when logging infos about the program
 	INFO,
+	// Used when logging errors
 	ERROR,
 	NONE,
 };
 
 /*
-	Logger for the program, saves and logs any log
+	Logger for the program
+	(Goofy name because of the subject)
 */
 class	Tintin_reporter
 {
@@ -50,35 +54,18 @@ class	Tintin_reporter
 		Tintin_reporter();
 		~Tintin_reporter();
 		
-		void	init()
-		{
-			std::string logFilePath = MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
-	
-			if (!std::filesystem::exists(MATT_DAEMON_LOG_PATH))
-				if (mkdir(MATT_DAEMON_LOG_PATH, 0755) == -1)
-					throw std::runtime_error("Failed to create directory: " MATT_DAEMON_LOG_PATH);
-			_file.open(logFilePath, std::ios::app);
-			if (!_file.is_open())
-				throw std::runtime_error("Failed to open log file: " + logFilePath);
-		}
-		/*
-			Calls log with LogType::NONE
-		*/
+		//	Initializes the logger, opens the file and creates the log directory
+		void	init();
+		//	Calls log with LogType::NONE
 		void	log(const std::string &str);
-		/*
-			Logs a message with LogType "header" ([ LOG ], [ INFO ] ...)
-		*/
+		//	Logs a message with LogType "header" ([ LOG ], [ INFO ] ...)
 		void	log(LogType type, const std::string &str);
 	private:
 		void	_log(const std::string &str);
-		
-		/*
-			Returns the timestamp in this format [D/M/Y-H:m:s]
-		*/
+
+		//	Returns the timestamp in this format [D/M/Y-H:m:s]
 		std::string	_getLogTimeString();
-		/*
-			Returns the timestamp in this format D_M_Y_H_m_s
-		*/
+		//	Returns the timestamp in this format D_M_Y_H_m_s
 		std::string	_getLogFileTimeString();
 		
 		std::ofstream	_file;
