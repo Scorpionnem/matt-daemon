@@ -6,24 +6,42 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 17:57:56 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/07 16:30:06 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "MattDaemon.hpp"
-
 
 // MAIN LOOP
 void	MattDaemon::start()
 {
 	if (!_init())
 		return ;
-	while (_running)
+	/*
+		This is the main loop of the program, the server should have no such loop.
+	*/
+	while (1)
 	{
 		if (_checkSignals())
 			break ;
 
-		// Server update (Server owns the remote shell and is given a reference to the logger)
+		/*
+			Here the runtime function of the server is called, it takes the logger by reference so it can log things by itself
+			The runtime function should accept clients, let them disconnect and send/receive informations.
+			If it needs to tell the daemon that it needs to stop we can just throw an exception for that.
+
+			The server should be the one handling the remote shell if we do it
+			It also handles everything about clients, the daemon only knows that it has a server running in it and wether it needs to stop it or not
+		*/
+
+		// try {
+		// 	_server.runtime(_logger);
+		// } catch (const Server::StopExcept &e) {
+			// _logger.log(LogType::INFO, "Received call to stop server: " + std::string(e.what()));
+		// 	break ;
+		// } catch (const std::exception &e) {
+				// _logger.log(LogType::ERROR, std::string(e.what()));
+		// }
 	}
 	_stop();
 }
@@ -48,6 +66,19 @@ bool	MattDaemon::_init()
 		_logger.log(LogType::ERROR, std::string(e.what()));
 		return (false);
 	}
+
+	/*
+		Here the server is started, it will open socket, set the poll and all
+		All protected by a catch (Better if everything is logged in the log file.)
+		The logger is given by reference to the start function so it can log
+	*/
+
+	// try {
+	// 	_server.start(_logger);
+	// } catch (const std::exception &e) {
+	// 	_logger.log(LogType::ERROR, std::string(e.what()));
+	// 	return (false);
+	// }
 	return (true);
 }
 

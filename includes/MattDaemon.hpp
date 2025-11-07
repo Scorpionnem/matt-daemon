@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:36:38 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 18:06:42 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/07 16:25:06 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,10 @@ class	MattDaemon
 
 		void	start();
 	private:
+		/*
+			The program owns the server, it will start/end it and make it update (runtime function)
+		*/
+		// Server			_server;
 		Tintin_reporter	_logger;
 
 		bool			_running = true;
