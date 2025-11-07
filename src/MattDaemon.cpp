@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/07 16:30:06 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/07 16:36:18 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	MattDaemon::start()
 	/*
 		This is the main loop of the program, the server should have no such loop.
 	*/
-	while (1)
+	while (_running)
 	{
 		if (_checkSignals())
 			break ;
