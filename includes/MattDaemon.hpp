@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:36:38 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/11 09:17:57 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/11 09:23:47 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class	MattDaemon
 {
 	public:
 		MattDaemon() {}
-		~MattDaemon() {}
+		~MattDaemon();
 
 		void	start();
 	private:
@@ -47,6 +47,7 @@ class	MattDaemon
 		// Server			_server;
 		Tintin_reporter	_logger;
 
+		bool			_isDaemon = false;
 		bool			_running = true;
 		// FD to the lock file
 		int				_lockFD = 0;

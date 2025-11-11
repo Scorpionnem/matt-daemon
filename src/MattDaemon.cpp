@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/11 09:18:55 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/11 09:24:52 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,14 @@ bool	MattDaemon::_init()
 	return (true);
 }
 
+MattDaemon::~MattDaemon()
+{
+	_unlock();
+}
+
 void	MattDaemon::_stop()
 {
 	_logger.log(LogType::INFO, "Stopping...");
-	_unlock();
 }
 
 
@@ -122,6 +126,9 @@ void	MattDaemon::_lock()
 void	MattDaemon::_unlock()
 {
 	close(_lockFD);
+
+	if (!_isDaemon)
+		return ;
 	remove(LOCK_FILE);
 	_logger.log(LogType::INFO, std::string("Unlocked ") + LOCK_FILE);
 }
@@ -166,6 +173,7 @@ bool	MattDaemon::_daemonize()
 	_closeFDs();
 
 	_logger.log(LogType::INFO, "Entered daemon mode, PID: " + std::to_string(getpid()));
+	_isDaemon = true;
 	return (false);
 }
 
