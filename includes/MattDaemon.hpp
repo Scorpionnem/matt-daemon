@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:36:38 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/07 16:25:06 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/11 09:17:57 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,8 @@ class	MattDaemon
 		bool	_checkSignals();
 		static void	_sigHandler(int sig);
 
-		//	Makes the program a daemon
-		void	_daemonize();
+		//	Makes the program a daemon, returns wether the process needs to exit
+		bool	_daemonize();
 		// Setups all signal hooks to catch them
 		void	_setupSignals();
 		// Closes all std fd's (Thats what a daemon does)

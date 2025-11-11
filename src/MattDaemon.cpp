@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/07 16:36:18 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/11 09:18:55 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ bool	MattDaemon::_init()
 
 	try {
 		_logger.log(LogType::INFO, "Starting.");
-		_daemonize();
+		if (_daemonize())
+			return (false);
 	} catch (const std::exception &e) {
 		_logger.log(LogType::ERROR, std::string(e.what()));
 		return (false);
@@ -132,15 +133,13 @@ void	MattDaemon::_setupSignals()
 	signal(SIGABRT, _sigHandler);
 	signal(SIGINT, _sigHandler);
 	signal(SIGQUIT, _sigHandler);
-	signal(SIGSTOP, _sigHandler);
-	signal(SIGKILL, _sigHandler);
 	signal(SIGTSTP, _sigHandler);
 	signal(SIGCONT, _sigHandler);
 	signal(SIGTERM, _sigHandler);
 	_logger.log(LogType::INFO, "Now catching signals");
 }
 
-void	MattDaemon::_daemonize()
+bool	MattDaemon::_daemonize()
 {
 	_logger.log(LogType::INFO, "Entering daemon mode.");
 
@@ -148,7 +147,7 @@ void	MattDaemon::_daemonize()
 
 	pid = fork();
 	if (pid > 0)
-		exit(0);
+		return (true);
 	if (pid < 0)
 		throw std::runtime_error("Failed to fork");
 
@@ -156,7 +155,7 @@ void	MattDaemon::_daemonize()
 
 	pid = fork();
 	if (pid > 0)
-		exit(0);
+		return (true);
 	if (pid < 0)
 		throw std::runtime_error("Failed to fork");
 
@@ -167,6 +166,7 @@ void	MattDaemon::_daemonize()
 	_closeFDs();
 
 	_logger.log(LogType::INFO, "Entered daemon mode, PID: " + std::to_string(getpid()));
+	return (false);
 }
 
 void	MattDaemon::_closeFDs()
