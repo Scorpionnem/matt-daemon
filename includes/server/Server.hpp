@@ -39,7 +39,7 @@ class Server
 		struct 	pollfd fds[NB_MAX_CLIENTS + 1];
 
 		void		initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1]);
-		bool		add_client();
+		bool		add_client(Tintin_reporter &logger);
 		void		read_all_clients(Tintin_reporter &logger, struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client);
 		bool		process_commands(Tintin_reporter &logger, Client &client);
 

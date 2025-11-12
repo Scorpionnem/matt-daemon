@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 13:35:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 11:11:27 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 13:03:30 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,16 +63,14 @@ void	Tintin_reporter::_log(const std::string &str)
 		_file << _getLogTimeString() << " " << str << std::endl;
 }
 
-Tintin_reporter::Tintin_reporter()
-{
-	
-}
+Tintin_reporter::Tintin_reporter() {}
 
-Tintin_reporter::~Tintin_reporter()
+Tintin_reporter::~Tintin_reporter() {}
+
+void	Tintin_reporter::close()
 {
 	_file.close();
 }
-
 
 // TIME FORMATS
 std::string	Tintin_reporter::_getLogFileTimeString()

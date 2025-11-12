@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:46:19 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 11:07:50 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 13:11:59 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ std::deque<std::string>	splitCommand(std::string input)
 
 void	Server::runtime(Tintin_reporter &logger)
 {
-	(void)logger;
 	bool	new_client = false;
 	initialize_poll_fds(fds);
 
@@ -107,7 +106,7 @@ void	Server::runtime(Tintin_reporter &logger)
 
 	if ((fds[0].revents & POLLIN) != 0)
 	{
-		new_client = add_client();
+		new_client = add_client(logger);
 	}
 
 	if (new_client == true || this->_client_list.size() != 0)
@@ -139,7 +138,7 @@ Client*	Server::findClientByNick(std::string recipient)
 	return (NULL);
 }
 
-bool	Server::add_client()
+bool	Server::add_client(Tintin_reporter &logger)
 {
 	sockaddr_in		addr;
 	unsigned int	len = 0;
@@ -158,6 +157,7 @@ bool	Server::add_client()
 			char	ip[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
 			Client	*new_client = new Client(clientSocket, ip);
+			logger.log(LogType::LOG, "New client joined with fd: " + std::to_string(clientSocket));
 			this->_client_list.push_back(new_client);
             this->_channel->addClient(*new_client);
 			return (true);
@@ -312,28 +312,27 @@ Server::Server()
 void	Server::setup(Tintin_reporter &logger)
 {
 	logger.log(LogType::INFO, "Starting server");
-	logger.log(LogType::INFO, "Opening socket");
 	this->_server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	this->_serverAddress.sin_family = AF_INET;
 	this->_serverAddress.sin_port = htons(7002);
 	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-	logger.log(LogType::INFO, "Binding socket");
 	bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress,
 		sizeof(this->_serverAddress));
 	listen(this->getServerSocket(), 3);
+	logger.log(LogType::INFO, "Server started");
 }
 
 void	Server::stop(Tintin_reporter &logger)
 {
-	logger.log(LogType::INFO, "Closing server.");
 	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
 	{
 		close((*it)->getSocketFd());
 		delete (*it);
 	}
 	delete (_channel);
-	close(_server_socket);	
+	close(_server_socket);
+	logger.log(LogType::INFO, "Server closed.");
 }
 
 Server::~Server()

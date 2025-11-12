@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 11:37:13 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 13:09:33 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,10 @@ void	MattDaemon::start()
 {
 	if (!_init())
 		return ;
-	/*
-		This is the main loop of the program, the server should have no such loop.
-	*/
 	while (_running)
 	{
 		if (_checkSignals())
 			break ;
-
-		/*
-			Here the runtime function of the server is called, it takes the logger by reference so it can log things by itself
-			The runtime function should accept clients, let them disconnect and send/receive informations.
-			If it needs to tell the daemon that it needs to stop we can just throw an exception for that.
-
-			The server should be the one handling the remote shell if we do it
-			It also handles everything about clients, the daemon only knows that it has a server running in it and wether it needs to stop it or not
-		*/
 
 		try {
 			_server.runtime(_logger);
@@ -56,20 +44,15 @@ bool	MattDaemon::_init()
 	}
 
 	try {
-		_logger.log(LogType::INFO, "Starting.");
 		if (_daemonize())
 			return (false);
-	} catch (const std::exception &e) {
-		_logger.log(LogType::ERROR, std::string(e.what()));
-		return (false);
-	}
 
-	try {
 		_server.setup(_logger);
 	} catch (const std::exception &e) {
 		_logger.log(LogType::ERROR, std::string(e.what()));
 		return (false);
 	}
+
 	return (true);
 }
 
@@ -82,6 +65,7 @@ void	MattDaemon::_stop()
 {
 	_server.stop(_logger);
 	_logger.log(LogType::INFO, "Stopping...");
+	_logger.close();
 }
 
 

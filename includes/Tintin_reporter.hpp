@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/10/23 18:10:43 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 13:03:25 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ class	Tintin_reporter
 		
 		//	Initializes the logger, opens the file and creates the log directory
 		void	init();
+		//	Close log file
+		void	close();
 		//	Calls log with LogType::NONE
 		void	log(const std::string &str);
 		//	Logs a message with LogType "header" ([ LOG ], [ INFO ] ...)
