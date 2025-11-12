@@ -7,7 +7,8 @@ NAME = MattDaemon
 NAME_BONUS = Ben_AFK
 
 SRCS =	src/main.cpp src/MattDaemon.cpp src/Tintin_reporter.cpp\
-		src/server/Channel.cpp src/server/Client.cpp src/server/Server.cpp src/server/ServerCommand.cpp
+		src/server/Channel.cpp src/server/Client.cpp src/server/Server.cpp src/server/ServerCommand.cpp\
+		src/UsersDatabase.cpp
 
 SRCS_BONUS = src/bonus/Ben_AFK.cpp
 
@@ -25,7 +26,7 @@ re: fclean all
 
 $(NAME): $(OBJS)
 	@echo Compiling $(NAME)
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^ -lssl -lcrypto
 
 $(NAME_BONUS): $(OBJS_BONUS)
 	@echo Compiling $(NAME_BONUS)
