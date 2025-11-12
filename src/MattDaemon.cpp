@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 10:55:32 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 11:37:13 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ void	MattDaemon::_lock()
 {
 	_lockFD = open(LOCK_FILE, O_RDWR | O_CREAT, 0640);
 	if (_lockFD < 0)
-		throw std::runtime_error("Failed to open lock file");
+		throw std::runtime_error("Failed to open " LOCK_FILE);
 	if (flock(_lockFD, LOCK_EX | LOCK_NB) < 0)
 		throw std::runtime_error("Failed to lock " LOCK_FILE);
 }
@@ -121,7 +121,7 @@ void	MattDaemon::_unlock()
 	if (!_isDaemon)
 		return ;
 	remove(LOCK_FILE);
-	_logger.log(LogType::INFO, std::string("Unlocked ") + LOCK_FILE);
+	_logger.log(LogType::INFO, "Unlocked " LOCK_FILE);
 }
 
 
