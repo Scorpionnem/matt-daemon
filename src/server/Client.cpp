@@ -54,7 +54,7 @@ Client	&Client::operator=(const Client &obj)
 	_username = obj._username;
 	_real_name = obj._real_name;
 	_nickname = obj._nickname;
-	_status = obj._status;
+	_isLogged = obj._isLogged;
 	_socket_fd = obj._socket_fd;
 	_message_buffer = obj._message_buffer;
 	_disconnected = obj._disconnected;
@@ -82,9 +82,9 @@ std::string	Client::getNickname(void)
 	return (this->_nickname);
 }
 
-int	Client::getStatus()
+int	Client::getLogin()
 {
-	return (this->_status);
+	return (this->_isLogged);
 }
 
 int	Client::getSocketFd()
@@ -119,7 +119,7 @@ void	Client::setNickname(std::string nickname)
 
 void	Client::setStatus(int status)
 {
-	this->_status = status;
+	this->_isLogged = status;
 }
 
 void	Client::setSocketFd(int socket_fd)

@@ -23,7 +23,7 @@ void	MattDaemon::start()
 			break ;
 
 		try {
-			_server.runtime(_logger);
+			_server.runtime();
 		} catch (const std::exception &e) {
 			_logger.log(LogType::ERROR, std::string(e.what()));
 		}
@@ -63,7 +63,7 @@ MattDaemon::~MattDaemon()
 
 void	MattDaemon::_stop()
 {
-	_server.stop(_logger);
+	_server.stop();
 	_logger.log(LogType::INFO, "Stopping...");
 	_logger.close();
 }

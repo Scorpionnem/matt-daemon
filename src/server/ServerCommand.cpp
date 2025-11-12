@@ -93,6 +93,13 @@ std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
 
 void	Server::login(Client &client, std::deque<std::string> args)
 {
+	std::cout << client.getLogin() << std::endl;
+	if (client.getLogin() == true)
+		std::cout << "true" << std::endl;
+	else
+		std::cout << "false" << std::endl;
+	if (client.getLogin() == true)
+		return ; // add logger + msg already connected
 	(void) args;
 	(void) client;
 }

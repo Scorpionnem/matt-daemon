@@ -99,7 +99,7 @@ std::deque<std::string>	splitCommand(std::string input)
 	return (tab);
 }
 
-void	Server::runtime(Tintin_reporter &logger)
+void	Server::runtime()
 {
 	bool	new_client = false;
 	initialize_poll_fds(fds);
@@ -111,11 +111,11 @@ void	Server::runtime(Tintin_reporter &logger)
 
 	if ((fds[0].revents & POLLIN) != 0)
 	{
-		new_client = add_client(logger);
+		new_client = add_client();
 	}
 
 	if (new_client == true || this->_client_list.size() != 0)
-		read_all_clients(logger, fds, new_client);
+		read_all_clients(fds, new_client);
 }
 
 void	Server::initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1])
@@ -143,7 +143,7 @@ Client*	Server::findClientByNick(std::string recipient)
 	return (NULL);
 }
 
-bool	Server::add_client(Tintin_reporter &logger)
+bool	Server::add_client()
 {
 	sockaddr_in		addr;
 	unsigned int	len = 0;
@@ -162,7 +162,7 @@ bool	Server::add_client(Tintin_reporter &logger)
 			char	ip[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
 			Client	*new_client = new Client(clientSocket, ip);
-			logger.log(LogType::LOG, "New client joined with fd: " + std::to_string(clientSocket));
+			_logger->log(LogType::LOG, "New client joined with fd: " + std::to_string(clientSocket));
 			this->_client_list.push_back(new_client);
             this->_channel->addClient(*new_client);
 			return (true);
@@ -181,7 +181,7 @@ void	Server::sendToAll(Client &client)
 	}
 }
 
-void	Server::read_all_clients(Tintin_reporter &logger, struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client)
+void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client)
 {
 	int		i = 1;
 	ssize_t size;
@@ -208,7 +208,7 @@ void	Server::read_all_clients(Tintin_reporter &logger, struct pollfd fds[NB_MAX_
 				(*it)->setMessage(message);
 			} while (size == 1024);
 
-			this->process_commands(logger, **it);
+			this->process_commands(**it);
 		}
 		i++;
 
@@ -216,7 +216,7 @@ void	Server::read_all_clients(Tintin_reporter &logger, struct pollfd fds[NB_MAX_
 			it++;
 		else
 		{
-			logger.log(LogType::LOG, "User disconnected");
+			_logger->log(LogType::LOG, "User disconnected");
 			this->sendToAll(**it);
 			delete (*it);
 			it = this->_client_list.erase(it);
@@ -224,13 +224,13 @@ void	Server::read_all_clients(Tintin_reporter &logger, struct pollfd fds[NB_MAX_
 	}
 }
 
-bool	Server::process_commands(Tintin_reporter &logger, Client &client)
+bool	Server::process_commands(Client &client)
 {
 	std::string message;
 	
 	message = client.getMessage();
 	if (!client.getDisconnected())
-		logger.log(LogType::LOG, message);
+		_logger->log(LogType::LOG, message); // disable this
 	while (message.find("\n") != std::string::npos)
 	{
 		std::string command = message.substr(0, message.find("\n"));
@@ -280,6 +280,12 @@ void	Server::ExecCommand(Command cmd, std::deque<std::string> args, Client &clie
         &Server::privMsg,
         &Server::msg
     };
+	if (cmd != Command::LOGIN && client.getLogin() == 0)
+	{
+		//add not be connected
+		sendToClient(client, client.getNickname(), "not be connected");//send to client "not be connected"
+		return ;
+	}
 	for (int j = 0; j <= 7; j++)
 	{
 		if (cmd == cmds[j])
@@ -299,28 +305,28 @@ void	Server::commands_parsing(Client &client, std::string input)
     {
         std::cout << "args = " << *it << std::endl;
     }
-	/*Command cmd = CommandLexer(list_arg[0]);
-	if (client.getStatus() == 0 && cmd != Command::LOGIN)
+	Command cmd = CommandLexer(list_arg[0]);
+	if (client.getLogin() == 0 && cmd != Command::LOGIN)
 		return ; // err not be connected 
 	if (cmd == Command::QUIT && list_arg.size() != 1 && list_arg[0][0] != '/')
 		cmd = Command::MSG;
-	ExecCommand(cmd, list_arg);*/
+	ExecCommand(cmd, list_arg, client);
 	/*if (list_arg[0] == "USER")
 		checkUser(client, list_arg);
 	else if (list_arg[0] == "NICK")
 		checkNick(client, list_arg);
-	else if ((client.getNickname().size() == 0 || client.getUsername().size() == 0) && client.getStatus() == 0)
+	else if ((client.getNickname().size() == 0 || client.getUsername().size() == 0) && client.getLogin() == 0)
 	{
 		std::string	msg = NOTAUTHENTIFICATED;
 		send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
 		return ;
 	}
-    else if (client.getNickname().size() != 0 && client.getUsername().size() != 0 && client.getStatus() == 0)
+    else if (client.getNickname().size() != 0 && client.getUsername().size() != 0 && client.getLogin() == 0)
     {
         client.setStatus(1);
         this->joinChannel(client, *_channel);
     }
-    if (client.getStatus() == 0)
+    if (client.getLogin() == 0)
     {
         return ;
     }
@@ -361,12 +367,12 @@ void	Server::commands_parsing(Client &client, std::string input)
 }*/
 
 Server::Server()
-{
-}
+{}
 
 void	Server::setup(Tintin_reporter &logger)
 {
-	logger.log(LogType::INFO, "Starting server");
+	_logger = &logger;
+	_logger->log(LogType::INFO, "Starting server");
 	this->_server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	this->_serverAddress.sin_family = AF_INET;
 	this->_serverAddress.sin_port = htons(7002);
@@ -375,11 +381,11 @@ void	Server::setup(Tintin_reporter &logger)
 	bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress,
 		sizeof(this->_serverAddress));
 	listen(this->getServerSocket(), 3);
-	logger.log(LogType::INFO, "Server started");
+	_logger->log(LogType::INFO, "Server started");
 	_channel = new Channel;
 }
 
-void	Server::stop(Tintin_reporter &logger)
+void	Server::stop()
 {
 	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
 	{
@@ -388,7 +394,7 @@ void	Server::stop(Tintin_reporter &logger)
 	}
 	delete (_channel);
 	close(_server_socket);
-	logger.log(LogType::INFO, "Server closed.");
+	_logger->log(LogType::INFO, "Server closed.");
 }
 
 Server::~Server()

@@ -16,7 +16,7 @@ class Client
 		std::string	_username;
 		std::string	_real_name;
 		std::string	_nickname;
-		int			_status;
+		int			_isLogged;
 		int			_socket_fd;
 		std::string	_message_buffer;
 		bool		_disconnected;
@@ -43,7 +43,7 @@ class Client
 		std::string	getUsername(void);
 		std::string	getRealName(void);
 		std::string	getNickname(void);
-		int			getStatus(void);
+		int			getLogin(void);
 		int			getSocketFd(void);
 		std::string	getMessage(void);
 		bool		getDisconnected(void);
