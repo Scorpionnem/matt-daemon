@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 15:30:15 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 15:47:44 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,9 @@ class	Tintin_reporter
 		Tintin_reporter	&operator=(const Tintin_reporter &copy)
 		{
 			if (this != &copy)
-				;
+			{
+
+			}
 			return (*this);
 		}
 
