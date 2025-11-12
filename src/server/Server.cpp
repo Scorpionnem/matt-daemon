@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:46:19 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 13:11:59 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 16:10:12 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -362,8 +362,6 @@ void	Server::commands_parsing(Client &client, std::string input)
 
 Server::Server()
 {
-    Channel *new_chann = new Channel;
-    _channel = new_chann;
 }
 
 void	Server::setup(Tintin_reporter &logger)
@@ -378,6 +376,7 @@ void	Server::setup(Tintin_reporter &logger)
 		sizeof(this->_serverAddress));
 	listen(this->getServerSocket(), 3);
 	logger.log(LogType::INFO, "Server started");
+	_channel = new Channel;
 }
 
 void	Server::stop(Tintin_reporter &logger)
