@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 14:30:44 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/05 10:08:35 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 15:01:15 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,24 @@ void	Ben_AFK::_loop()
 
 void	Ben_AFK::_serverInput(std::string input)
 {
-	std::cout << "\a\r" << input;
+	struct winsize	w;
+
+	if (ioctl(0, TIOCGWINSZ, &w) == -1)
+		return ;
+	std::cout << "\r";
+	for (int i = 0; i < w.ws_col; i++)
+		std::cout << " ";
+	std::cout << "\r" << input << std::flush;
 }
 
 void	Ben_AFK::_userInput(std::string input)
 {
-	input += "\n\r";
+	if (input == "clear")
+	{
+		std::cout << "\033c" << std::flush;
+		return ;
+	}
+	input += "\r\n";
 	send(_sockFD, input.c_str(), input.size(), 0);
 }
 

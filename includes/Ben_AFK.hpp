@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 14:31:06 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/02 13:39:20 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 14:53:20 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <exception>
+#include <sys/ioctl.h>
 
 class	Ben_AFK
 {
