@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:36:38 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/11 09:23:47 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 10:47:48 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MATTDAEMON_HPP
 
 # include "Tintin_reporter.hpp"
+# include "Server.hpp"
 
 # include <iostream>
 # include <fstream>
@@ -41,10 +42,7 @@ class	MattDaemon
 
 		void	start();
 	private:
-		/*
-			The program owns the server, it will start/end it and make it update (runtime function)
-		*/
-		// Server			_server;
+		Server			_server;
 		Tintin_reporter	_logger;
 
 		bool			_isDaemon = false;

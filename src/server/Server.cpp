@@ -1,4 +1,16 @@
-#include "../include/Server.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/12 10:46:19 by mbatty            #+#    #+#             */
+/*   Updated: 2025/11/12 11:07:50 by mbatty           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Server.hpp"
 
 std::deque<std::string>	parsingMultiArgs(std::string data)
 {
@@ -82,28 +94,24 @@ std::deque<std::string>	splitCommand(std::string input)
 	return (tab);
 }
 
-void	Server::runtime()
+void	Server::runtime(Tintin_reporter &logger)
 {
-	struct 	pollfd fds[NB_MAX_CLIENTS + 1];
+	(void)logger;
+	bool	new_client = false;
+	initialize_poll_fds(fds);
 
-	while (1)
+	int	nb_fd = poll(fds, _client_list.size() + 1, -1);
+
+	if (nb_fd == -1 && errno == EINTR)
+		return;
+
+	if ((fds[0].revents & POLLIN) != 0)
 	{
-		bool	new_client = false;
-		initialize_poll_fds(fds);
-
-		int	nb_fd = poll(fds, _client_list.size() + 1, -1);
-
-		if (nb_fd == -1 && errno == EINTR)
-			return;
-
-		if ((fds[0].revents & POLLIN) != 0)
-		{
-			new_client = add_client();
-		}
-
-		if (new_client == true || this->_client_list.size() != 0)
-			read_all_clients(fds, new_client);
+		new_client = add_client();
 	}
+
+	if (new_client == true || this->_client_list.size() != 0)
+		read_all_clients(logger, fds, new_client);
 }
 
 void	Server::initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1])
@@ -168,7 +176,7 @@ void	Server::sendToAll(Client &client)
 	}
 }
 
-void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client)
+void	Server::read_all_clients(Tintin_reporter &logger, struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client)
 {
 	int		i = 1;
 	ssize_t size;
@@ -195,7 +203,7 @@ void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_cl
 				(*it)->setMessage(message);
 			} while (size == 1024);
 
-			this->process_commands(**it);
+			this->process_commands(logger, **it);
 		}
 		i++;
 
@@ -203,6 +211,7 @@ void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_cl
 			it++;
 		else
 		{
+			logger.log(LogType::LOG, "User disconnected");
 			this->sendToAll(**it);
 			delete (*it);
 			it = this->_client_list.erase(it);
@@ -210,11 +219,13 @@ void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_cl
 	}
 }
 
-bool	Server::process_commands(Client &client)
+bool	Server::process_commands(Tintin_reporter &logger, Client &client)
 {
 	std::string message;
 	
 	message = client.getMessage();
+	if (!client.getDisconnected())
+		logger.log(LogType::LOG, message);
 	while (message.find("\n") != std::string::npos)
 	{
 		std::string command = message.substr(0, message.find("\n"));
@@ -298,31 +309,35 @@ Server::Server()
     _channel = new_chann;
 }
 
-void	Server::setup()
+void	Server::setup(Tintin_reporter &logger)
 {
-    try {
-	    this->_server_socket = socket(AF_INET, SOCK_STREAM, 0);
-	    this->_serverAddress.sin_family = AF_INET;
-	    this->_serverAddress.sin_port = htons(7002);
-	    this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
+	logger.log(LogType::INFO, "Starting server");
+	logger.log(LogType::INFO, "Opening socket");
+	this->_server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	this->_serverAddress.sin_family = AF_INET;
+	this->_serverAddress.sin_port = htons(7002);
+	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-	    bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress,
-	    	sizeof(this->_serverAddress));
-	    listen(this->getServerSocket(), 5);
-    }
-    catch (...)
-    {}
+	logger.log(LogType::INFO, "Binding socket");
+	bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress,
+		sizeof(this->_serverAddress));
+	listen(this->getServerSocket(), 3);
 }
 
-
-Server::~Server()
+void	Server::stop(Tintin_reporter &logger)
 {
+	logger.log(LogType::INFO, "Closing server.");
 	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
 	{
 		close((*it)->getSocketFd());
 		delete (*it);
 	}
-    delete (_channel);
+	delete (_channel);
+	close(_server_socket);	
+}
+
+Server::~Server()
+{
 }
 
 std::vector<Client*>&	Server::getListClient(void)

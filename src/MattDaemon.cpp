@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/11 09:24:52 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 10:55:32 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,18 +34,14 @@ void	MattDaemon::start()
 			It also handles everything about clients, the daemon only knows that it has a server running in it and wether it needs to stop it or not
 		*/
 
-		// try {
-		// 	_server.runtime(_logger);
-		// } catch (const Server::StopExcept &e) {
-			// _logger.log(LogType::INFO, "Received call to stop server: " + std::string(e.what()));
-		// 	break ;
-		// } catch (const std::exception &e) {
-				// _logger.log(LogType::ERROR, std::string(e.what()));
-		// }
+		try {
+			_server.runtime(_logger);
+		} catch (const std::exception &e) {
+			_logger.log(LogType::ERROR, std::string(e.what()));
+		}
 	}
 	_stop();
 }
-
 
 // INITIALIZATION / END
 bool	MattDaemon::_init()
@@ -68,18 +64,12 @@ bool	MattDaemon::_init()
 		return (false);
 	}
 
-	/*
-		Here the server is started, it will open socket, set the poll and all
-		All protected by a catch (Better if everything is logged in the log file.)
-		The logger is given by reference to the start function so it can log
-	*/
-
-	// try {
-	// 	_server.start(_logger);
-	// } catch (const std::exception &e) {
-	// 	_logger.log(LogType::ERROR, std::string(e.what()));
-	// 	return (false);
-	// }
+	try {
+		_server.setup(_logger);
+	} catch (const std::exception &e) {
+		_logger.log(LogType::ERROR, std::string(e.what()));
+		return (false);
+	}
 	return (true);
 }
 
@@ -90,6 +80,7 @@ MattDaemon::~MattDaemon()
 
 void	MattDaemon::_stop()
 {
+	_server.stop(_logger);
 	_logger.log(LogType::INFO, "Stopping...");
 }
 

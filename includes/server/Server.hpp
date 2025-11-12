@@ -23,6 +23,8 @@
 # include "Define.hpp"
 # include "Channel.hpp"
 
+# include "Tintin_reporter.hpp"
+
 class Client;
 class Channel;
 
@@ -34,10 +36,12 @@ class Server
 		std::vector<Client*>	_client_list;
 		Channel					*_channel;
 
+		struct 	pollfd fds[NB_MAX_CLIENTS + 1];
+
 		void		initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1]);
 		bool		add_client();
-		void		read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client);
-		bool		process_commands(Client &client);
+		void		read_all_clients(Tintin_reporter &logger, struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client);
+		bool		process_commands(Tintin_reporter &logger, Client &client);
 
 		std::string	checkUser(Client &client, std::deque<std::string> data);
 		std::string	checkNick(Client &client, std::deque<std::string> list_arg);
@@ -59,8 +63,9 @@ class Server
 		Server();
 		~Server();
 
-		void		setup();
-		void		runtime();
+		void		setup(Tintin_reporter &logger);
+		void		stop(Tintin_reporter &logger);
+		void		runtime(Tintin_reporter &logger);
 
 		int						getServerSocket();
 		std::vector<Client*>&	getListClient(void);

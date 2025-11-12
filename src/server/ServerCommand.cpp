@@ -1,5 +1,17 @@
-#include "../include/Server.hpp"
-#include "../include/Define.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ServerCommand.cpp                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/12 10:46:21 by mbatty            #+#    #+#             */
+/*   Updated: 2025/11/12 10:46:51 by mbatty           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Server.hpp"
+#include "Define.hpp"
 
 std::string	Server::checkPart(Client &client, std::deque<std::string> data)
 {

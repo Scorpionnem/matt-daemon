@@ -1,4 +1,16 @@
-#include "../include/Channel.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/11/12 10:46:15 by mbatty            #+#    #+#             */
+/*   Updated: 2025/11/12 10:46:15 by mbatty           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "Channel.hpp"
 
 Client*	Channel::findClientByNick(std::string sender, std::deque<Client*> &list)
 {

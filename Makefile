@@ -1,12 +1,13 @@
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -MMD -MP -g -std=c++17
 
-INCLUDES = -I includes
+INCLUDES = -I includes -I includes/server
 
 NAME = MattDaemon
 NAME_BONUS = Ben_AFK
 
-SRCS = src/main.cpp src/MattDaemon.cpp src/Tintin_reporter.cpp
+SRCS =	src/main.cpp src/MattDaemon.cpp src/Tintin_reporter.cpp\
+		src/server/Channel.cpp src/server/Client.cpp src/server/Server.cpp src/server/ServerCommand.cpp
 
 SRCS_BONUS = src/bonus/Ben_AFK.cpp
 
