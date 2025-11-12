@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:36:38 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 10:47:48 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 15:30:59 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,23 @@ class	MattDaemon
 	public:
 		MattDaemon() {}
 		~MattDaemon();
+
+		MattDaemon(const MattDaemon &copy)
+		{
+			*this = copy;
+		}
+		MattDaemon	&operator=(const MattDaemon &copy)
+		{
+			if (this != &copy)
+			{
+				this->_isDaemon = copy._isDaemon;
+				this->_lockFD = copy._lockFD;
+				this->_running = copy._running;
+				this->_logger = copy._logger;
+				this->_server = copy._server;
+			}
+			return (*this);
+		}
 
 		void	start();
 	private:

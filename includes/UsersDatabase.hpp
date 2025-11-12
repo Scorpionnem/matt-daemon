@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 14:18:09 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 14:23:49 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/12 15:31:29 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,17 @@ class	UsersDatabase
 	public:
 		UsersDatabase() {}
 		~UsersDatabase() {}
+
+		UsersDatabase(const UsersDatabase &copy)
+		{
+			*this = copy;
+		}
+		UsersDatabase	&operator=(const UsersDatabase &copy)
+		{
+			if (this != &copy)
+				this->_users = copy._users;
+			return (*this);
+		}
 
 		void	loadDB();
 		void	exportDB();
