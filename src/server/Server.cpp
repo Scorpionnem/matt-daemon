@@ -31,6 +31,11 @@ std::deque<std::string>	parsingMultiArgs(std::string data)
 	return (tab);
 }
 
+void	Server::stopServer()
+{
+	this->_stop = true;
+}
+
 void	Server::joinChannel(Client &client, Channel &channel) const
 {
 	channel.addClient(client);
@@ -236,6 +241,52 @@ bool	Server::process_commands(Tintin_reporter &logger, Client &client)
 	return (true);
 }
 
+Command	Server::CommandLexer(const std::string input)
+{
+	static const std::array<std::pair<const char*, Command>, 15> table = {{
+	{"/login", Command::LOGIN},
+	{"/quit", Command::QUIT},
+	{"quit", Command::QUIT},
+	{"/shell", Command::SHELL},
+	{"/leave", Command::LEAVE},
+	{"/list", Command::LIST},
+	{"/help", Command::HELP}}};
+
+    for (auto &pair : table)
+    {
+        const std::string &name = pair.first;
+        Command command = pair.second;
+        if (input == name)
+            return (command);
+    }
+	if (input[0] == '/')
+    	return (Command::UNKNOW);
+    return (Command::MSG);
+}
+
+void	Server::ExecCommand(Command cmd, std::deque<std::string> args)
+{
+	switch (cmd)
+	{
+		case Command::LOGIN:
+			return (login(args));
+		case Command::QUIT:
+			break;
+		case Command::LEAVE:
+			break;
+		case Command::SHELL:
+			break;
+		case Command::LIST:
+			break;
+		case Command::HELP:
+			break;
+		case Command::UNKNOW:
+			break;		
+		default:
+			break;
+	}
+}
+
 void	Server::commands_parsing(Client &client, std::string input)
 {
     (void) client;
@@ -248,7 +299,13 @@ void	Server::commands_parsing(Client &client, std::string input)
     {
         std::cout << "args = " << *it << std::endl;
     }
-	if (list_arg[0] == "USER")
+	/*Command cmd = CommandLexer(list_arg[0]);
+	if (client.getStatus() == 0 && cmd != Command::LOGIN)
+		return ; // err not be connected 
+	if (cmd == Command::QUIT && list_arg.size() != 1 && list_arg[0][0] != '/')
+		cmd = Command::MSG;
+	ExecCommand(cmd, list_arg);*/
+	/*if (list_arg[0] == "USER")
 		checkUser(client, list_arg);
 	else if (list_arg[0] == "NICK")
 		checkNick(client, list_arg);
@@ -269,7 +326,7 @@ void	Server::commands_parsing(Client &client, std::string input)
     }
 
 	if (list_arg[0] == "PRIVMSG")
-		checkPrivmsg(client, list_arg);
+		checkPrivmsg(client, list_arg);*/
 	/*else if (list_arg[0] == "JOIN")
 		checkJoin(client, list_arg);
 	else if (list_arg[0] == "MODE")

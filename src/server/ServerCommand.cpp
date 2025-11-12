@@ -91,6 +91,12 @@ std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
 	return ("");
 }
 
+void	Server::login(std::deque<std::string> args)
+{
+	(void) args;
+}
+
+
 std::string	Server::checkPrivmsg(Client &client, std::deque<std::string> data)
 {
 	std::string	msg_to_send;

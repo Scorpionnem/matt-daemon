@@ -20,6 +20,7 @@
 # include <iomanip>
 # include <string>
 # include <ctime>
+# include <array>
 # include "Define.hpp"
 # include "Channel.hpp"
 
@@ -27,6 +28,18 @@
 
 class Client;
 class Channel;
+
+enum class Command
+{
+	LOGIN,
+	QUIT,
+	LEAVE,
+	SHELL,
+	LIST,
+	HELP,
+	UNKNOW,
+	MSG
+};
 
 class Server
 {
@@ -36,7 +49,17 @@ class Server
 		std::vector<Client*>	_client_list;
 		Channel					*_channel;
 
+		bool					_stop = false;
+
 		struct 	pollfd fds[NB_MAX_CLIENTS + 1];
+		
+		void		stopServer();
+
+		Command		CommandLexer(const std::string input);
+		void		ExecCommand(Command cmd, std::deque<std::string> args);
+
+		void		login(std::deque<std::string> args);
+
 
 		void		initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1]);
 		bool		add_client(Tintin_reporter &logger);
