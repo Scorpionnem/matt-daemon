@@ -243,13 +243,14 @@ bool	Server::process_commands(Tintin_reporter &logger, Client &client)
 
 Command	Server::CommandLexer(const std::string input)
 {
-	static const std::array<std::pair<const char*, Command>, 15> table = {{
+	static const std::array<std::pair<const char*, Command>, 8> table = {{
 	{"/login", Command::LOGIN},
 	{"/quit", Command::QUIT},
 	{"quit", Command::QUIT},
 	{"/shell", Command::SHELL},
 	{"/leave", Command::LEAVE},
 	{"/list", Command::LIST},
+	{"/msg", Command::PRIVMSG},
 	{"/help", Command::HELP}}};
 
     for (auto &pair : table)
@@ -264,26 +265,25 @@ Command	Server::CommandLexer(const std::string input)
     return (Command::MSG);
 }
 
-void	Server::ExecCommand(Command cmd, std::deque<std::string> args)
+void	Server::ExecCommand(Command cmd, std::deque<std::string> args, Client &client)
 {
-	switch (cmd)
+	Command cmds[8] = {Command::LOGIN, Command::QUIT,
+		Command::LEAVE, Command::SHELL, Command::LIST,
+		Command::HELP, Command::MSG, Command::PRIVMSG};
+    void (Server::*functptr[])(Client &, std::deque<std::string>) = {
+        &Server::login,
+        &Server::quit,
+        &Server::leave,
+        &Server::shell,
+        &Server::list,
+        &Server::help,
+        &Server::privMsg,
+        &Server::msg
+    };
+	for (int j = 0; j <= 7; j++)
 	{
-		case Command::LOGIN:
-			return (login(args));
-		case Command::QUIT:
-			break;
-		case Command::LEAVE:
-			break;
-		case Command::SHELL:
-			break;
-		case Command::LIST:
-			break;
-		case Command::HELP:
-			break;
-		case Command::UNKNOW:
-			break;		
-		default:
-			break;
+		if (cmd == cmds[j])
+			(this->*functptr[j])(client, args);
 	}
 }
 

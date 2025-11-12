@@ -37,6 +37,7 @@ enum class Command
 	SHELL,
 	LIST,
 	HELP,
+	PRIVMSG,
 	UNKNOW,
 	MSG
 };
@@ -56,9 +57,16 @@ class Server
 		void		stopServer();
 
 		Command		CommandLexer(const std::string input);
-		void		ExecCommand(Command cmd, std::deque<std::string> args);
+		void		ExecCommand(Command cmd, std::deque<std::string> args, Client &client);
 
-		void		login(std::deque<std::string> args);
+		void		login(Client &client, std::deque<std::string> args);
+		void		quit(Client &client, std::deque<std::string> args);
+		void		leave(Client &client, std::deque<std::string> args);
+		void		shell(Client &client, std::deque<std::string> args);
+		void		list(Client &client, std::deque<std::string> args);
+		void		help(Client &client, std::deque<std::string> args);
+		void		msg(Client &client, std::deque<std::string> args);
+		void		privMsg(Client &client, std::deque<std::string> args);
 
 
 		void		initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1]);

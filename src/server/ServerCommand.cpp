@@ -91,8 +91,46 @@ std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
 	return ("");
 }
 
-void	Server::login(std::deque<std::string> args)
+void	Server::login(Client &client, std::deque<std::string> args)
 {
+	(void) args;
+	(void) client;
+}
+
+void		Server::quit(Client &client, std::deque<std::string>)
+{
+	(void) client;
+}
+
+void		Server::leave(Client &client, std::deque<std::string>)
+{
+	(void) client;
+}
+
+void		Server::shell(Client &client, std::deque<std::string>)
+{
+	(void) client;
+}
+
+void		Server::list(Client &client, std::deque<std::string>)
+{
+	(void) client;
+}
+
+void		Server::help(Client &client, std::deque<std::string>)
+{
+	(void) client;
+}
+
+void		Server::msg(Client &client, std::deque<std::string> args)
+{
+	(void) client;
+	(void) args;
+}
+
+void		Server::privMsg(Client &client, std::deque<std::string> args)
+{
+	(void) client;
 	(void) args;
 }
 
