@@ -23,7 +23,7 @@ class Channel
 
 		std::string				sendAllClient(Client &sender, std::string msg);
 		std::string				sendAllClientMsg(Client &sender, std::string msg);
-		Client*					findClientByNick(std::string sender, std::deque<Client*> &list);
+		Client*					findClientByName(std::string sender, std::deque<Client*> &list);
 
 };
 

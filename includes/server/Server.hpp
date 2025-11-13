@@ -91,13 +91,15 @@ class Server
 
 		void		LogMsgClient(Client &client, std::string msg_cl, LogType type, std::string log_msg);
 
+		void		sendAll(std::string msg_cl);
+
 		// void		sendToAllClient(Client &client, std::string new_nickname);
 
 	public :
 		bool		running() {return (!_stop);}
 		void		commands_parsing(Client &client, std::string commande);
 
-		Client*		findClientByNick(std::string recipient);
+		Client*		findClientByName(std::string recipient);
 
 		void		joinChannel(Client &client, Channel &channel) const;
 

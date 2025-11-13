@@ -12,7 +12,7 @@
 
 #include "Channel.hpp"
 
-Client*	Channel::findClientByNick(std::string sender, std::deque<Client*> &list)
+Client*	Channel::findClientByName(std::string sender, std::deque<Client*> &list)
 {
 	for (std::deque<Client*>::iterator it = list.begin(); it != list.end(); it++)
 	{
@@ -56,7 +56,7 @@ void	Channel::deleteClient(Client &client, std::deque<Client*> &list)
 
 void	Channel::removeClient(Client &client)
 {
-	if (this->findClientByNick(client.getName(), this->getAllClient()) != NULL)
+	if (this->findClientByName(client.getName(), this->getAllClient()) != NULL)
 	{
 		// this->sendAllClient(client, QUIT(client.getName(), client.getUsername(), client.getIp()));
 		deleteClient(client, this->getAllClient());

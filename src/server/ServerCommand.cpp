@@ -65,7 +65,7 @@ std::string	Server::checkUser(Client& client, std::deque<std::string> data)
 	if (list_arg.size() == 1 || list_arg[1] == "")
 		return (client.send_msg(ERR_NONICKNAMEGIVEN));
 
-	if (this->findClientByNick(list_arg[1]) != NULL)
+	if (this->findClientByName(list_arg[1]) != NULL)
 		return (client.send_msg(ERR_NICKNAMEINUSE(list_arg[1])));
 
 	if (list_arg[1].find('@') != std::string::npos || list_arg[1].find('#') != std::string::npos)
@@ -96,10 +96,10 @@ void	Server::login(Client &client, std::deque<std::string> args)
 	if (args.size() != 3)
 		return (LogMsgClient(client, LOGIN_CL_INV_ARG, LogType::ERROR, LOGIN_LOG_FAILED(client.getId())));
 		
-	if (client.getLogin() == true)
+	if (client.getLogin() == true || this->findClientByName(args[1]) != NULL)
 		return (LogMsgClient(client, LOGIN_CL_ALRD_CO, LogType::ERROR, LOGIN_LOG_ALRD_CO(client.getId())));
-
-	if (_db.userExists(args[1]) == false)
+	
+	else if (_db.userExists(args[1]) == false)
 		_db.addUser(args[1], args[2]);
 
 	else if (_db.passMatch(args[1], args[2]) == false)
@@ -112,15 +112,28 @@ void	Server::login(Client &client, std::deque<std::string> args)
 	LogMsgClient(client, LOGIN_CL_SUCCESS, LogType::INFO, LOGIN_LOG_SUCCESS(client.getId()));
 }
 
+void	Server::sendAll(std::string msg_cl)
+{
+	for (std::vector<Client *>::iterator it = this->getListClient().begin(); it != this->getListClient().end(); it++)
+	{
+		send((*it)->getSocketFd(), msg_cl.c_str(), msg_cl.size(), 0);
+	}
+}
+
+
 void		Server::quit(Client &client, std::deque<std::string>)
 {
+	this->sendAll("Server closing...\n\r");
+	_logger->log(LogType::INFO, std::to_string(client.getId()) + " /quit : closing server");
 	_stop = true;
 	(void) client;
 }
 
 void		Server::leave(Client &client, std::deque<std::string>)
 {
-	(void) client;
+	// sendAll(client.getName() + " disconnected...\n\r");
+	this->_channel->removeClient(client);
+	client.setDisconnected(true);
 }
 
 void		Server::shell(Client &client, std::deque<std::string>)
@@ -128,9 +141,31 @@ void		Server::shell(Client &client, std::deque<std::string>)
 	(void) client;
 }
 
-void		Server::list(Client &client, std::deque<std::string>)
+void		Server::list(Client &client, std::deque<std::string> args)
 {
-	(void) client;
+	_logger->log(LogType::CMD, LIST_CMD(client.getId()));
+
+	send(client.getSocketFd(), "Client(s) connected : \n\r", 25, 0);
+	for (std::vector<Client *>::iterator it = getListClient().begin(); it != getListClient().end(); it++)
+	{
+		std::string cli = LIST_CL((*it)->getName());
+		send(client.getSocketFd(), cli.c_str(), cli.size(), 0);
+	}
+
+	if (args.size() > 1)
+	{
+		if (args[1] == "-a")
+		{
+			send(client.getSocketFd(), "Client(s) in Database : \n\r", 27, 0);
+			for (std::map<std::string, std::string>::iterator it = _db.getDB().begin(); it != _db.getDB().end(); it++)
+			{
+				std::string cli = LIST_CL(it->first);
+				send(client.getSocketFd(), cli.c_str(), cli.size(), 0);
+			}
+		}
+		else
+			LogMsgClient(client, LIST_CL_BAD_FLAG, LogType::ERROR, LIST_LOG_BAD_FLAG(client.getId()));
+	}
 }
 
 void		Server::help(Client &client, std::deque<std::string>)

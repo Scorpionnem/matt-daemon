@@ -67,6 +67,8 @@ class	UsersDatabase
 			@param pass password to try and match (Dont give a hashed pass)
 		*/
 		bool	passMatch(const std::string &user, const std::string &pass);
+
+		std::map<std::string, std::string>	&getDB() {return (_users);}
 	private:
 		std::string	_sha256(const std::string& input);
 

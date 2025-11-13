@@ -62,14 +62,14 @@ void Server::sendToClient(Client &client, std::string receiver, std::string msgT
 {
 	std::string	msg = client.getName() + " send you : " + MSGSEND(receiver, msgToSend);
 	
-	send(this->findClientByNick(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
+	send(this->findClientByName(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
 }
 
 void Server::sendToClient(std::string receiver, std::string msgToSend)
 {
 	std::string	msg = MSGSEND(receiver, msgToSend);
 	
-	send(this->findClientByNick(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
+	send(this->findClientByName(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
 }
 
 void Server::sendToClient(Client &client, std::string msgToSend)
@@ -142,7 +142,7 @@ void	Server::initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1])
 	}
 }
 
-Client*	Server::findClientByNick(std::string recipient)
+Client*	Server::findClientByName(std::string recipient)
 {
 	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
 	{
@@ -225,8 +225,8 @@ void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_cl
 			it++;
 		else
 		{
-			_logger->log(LogType::LOG, "User disconnected");
-			this->sendToAll(**it);
+			_logger->log(LogType::LOG, "User : " + std::to_string((*it)->getId()) + " disconnected");
+			this->sendAll(std::to_string((*it)->getId()) + " disconnected\n\r");
 			delete (*it);
 			it = this->_client_list.erase(it);
 		}

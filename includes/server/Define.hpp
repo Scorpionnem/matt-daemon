@@ -1,6 +1,8 @@
 #ifndef DEFINE_HPP
 # define DEFINE_HPP
 
+//
+
 //LOGIN
 
 /*LOGGER*/
@@ -22,6 +24,21 @@
 # define LOGIN_CL_ERR_DB "/login : Choosed another name or wrong password\n\r"
 
 # define LOGIN_CL_SUCCESS "/login : Connexion successfull\n\r"
+
+//LIST
+
+/*LOGGER*/
+
+# define LIST_CMD(cl_id) std::to_string(cl_id) + " used /list"
+
+# define LIST_LOG_BAD_FLAG(cl_id) std::to_string(cl_id) + " /list: invalid option"
+
+/*CLIENT*/
+
+# define LIST_CL_BAD_FLAG " /list: invalid option. Try with -a\n\r"
+
+# define LIST_CL(name) name + "\n\r"
+
 
 //PRIVMSG
 # define ERR_ALREADYREGISTRED ":127.0.0.1 462 :You may not reregister\r\n"
