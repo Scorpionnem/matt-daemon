@@ -30,7 +30,7 @@ $(NAME): $(OBJS)
 
 $(NAME_BONUS): $(OBJS_BONUS)
 	@echo Compiling $(NAME_BONUS)
-	@$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^ -lreadline
+	@$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^
 
 $(OBJDIR)/%.o: %.cpp
 	@mkdir -p $(dir $@)
