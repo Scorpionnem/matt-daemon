@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 14:19:16 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 14:21:50 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 13:30:23 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,12 @@ void	UsersDatabase::loadDB()
 
 void	UsersDatabase::exportDB()
 {
-	std::ofstream	file(USERSDB_FILE);
+	if (!std::filesystem::exists(USERDB_PATH))
+		std::filesystem::create_directories(USERDB_PATH);
+
+	std::ofstream	file(USERDB_PATH USERSDB_FILE);
 	if (!file.is_open())
-		throw std::runtime_error("Failed to open" USERSDB_FILE);
+		throw std::runtime_error("Failed to open" USERDB_PATH USERSDB_FILE);
 
 	for (auto pair : _users)
 		file << pair.first << " " << pair.second << std::endl;

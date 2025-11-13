@@ -6,22 +6,26 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 14:18:09 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 15:31:29 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 13:27:13 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef USERSDATABASE_HPP
 # define USERSDATABASE_HPP
 
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <string>
-#include <openssl/evp.h>
-#include <map>
-#include <fstream>
+# include <iostream>
+# include <iomanip>
+# include <sstream>
+# include <string>
+# include <openssl/evp.h>
+# include <map>
+# include <fstream>
 
-# define USERSDB_FILE "/home/matde-ol/Desktop/matt-deamon/users"
+# include <filesystem>
+# include <sys/stat.h>
+
+# define USERDB_PATH "/tmp/matt-daemon/"
+# define USERSDB_FILE "users"
 
 class	UsersDatabase
 {
