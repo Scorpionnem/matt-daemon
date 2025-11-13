@@ -42,8 +42,8 @@ clean:
 	@rm -rf $(OBJDIR)
 
 fclean: clean
-	@echo Cleaning $(NAME)
-	@rm -rf $(NAME)
+	@echo Cleaning $(NAME) $(NAME_BONUS)
+	@rm -rf $(NAME) $(NAME_BONUS)
 
 run: $(NAME)
 	./$(NAME)
