@@ -13,76 +13,6 @@
 #include "Server.hpp"
 #include "Define.hpp"
 
-std::string	Server::checkPart(Client &client, std::deque<std::string> data)
-{
-	if (data.size() == 1)
-		return (client.send_msg(ERR_NEEDMOREPARAMS(client.getName(), data[0])));
-	else if (data.size() > 3)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
-
-	std::deque<std::string>	channel = parsingMultiArgs(data[1]);
-	for (std::deque<std::string>::iterator it = channel.begin(); it != channel.end(); it++)
-	{
-		std::string msg = "";
-		if (data.size() == 2)
-			msg = ":Leave";
-		else if (data[2][0] != ':')
-			msg = ":" + data[2];
-		else
-			msg += data[2];
-		_channel->sendAllClient(client, LEAVE(client.getName(), client.getIp(), msg));
-		_channel->deleteClient(client, _channel->getAllClient());
-	}
-	return ("");
-}
-
-std::string	Server::checkUser(Client& client, std::deque<std::string> data)
-{
-	if (data.size() < 5)
-		return (client.send_msg(ERR_NEEDMOREPARAMS(client.getName(), data[0])));
-	else if (data.size() > 5)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
-
-	for (std::deque<std::string>::iterator it = data.begin(); it != data.end(); it++)
-	{
-		if ((*it).find('@') != std::string::npos || (*it).find('#') != std::string::npos)
-			return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
-	}
-
-	if (client.getName().size() != 0)
-		client.setLogStatus(true);
-	// if (client.getName().size() != 0)
-	// {
-		// client.send_msg(SELECTUSER(client.getUsername()));
-	return (client.send_msg(AUTHENTIFICATED(client.getName())));
-	// }
-	// return (client.send_msg(SELECTUSER(client.getUsername())));
-}
-
-/*std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
-{
-
-	if (list_arg.size() == 1 || list_arg[1] == "")
-		return (client.send_msg(ERR_NONICKNAMEGIVEN));
-
-	if (this->findClientByName(list_arg[1]) != NULL)
-		return (client.send_msg(ERR_NICKNAMEINUSE(list_arg[1])));
-
-	if (list_arg[1].find('@') != std::string::npos || list_arg[1].find('#') != std::string::npos)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), list_arg[1])));
-
-	if (client.getName().size() == 0)
-	{
-		client.setName(list_arg[1]);
-		// if (client.getUsername().size() != 0)
-		// 	return (client.send_msg(AUTHENTIFICATED(client.getName())));
-		return (client.send_msg(SELECTNICKNAME(client.getName())));	
-	}
-	this->sendToAllClient(client, list_arg[1]);
-	client.setName(list_arg[1]);
-	return ("");
-}*/
-
 void	Server::LogMsgClient(Client &client, std::string msg_cl, LogType type, std::string log_msg)
 {
 	sendToClient(client, msg_cl);
@@ -126,19 +56,12 @@ void		Server::quit(Client &client, std::deque<std::string>)
 	this->sendAll("Server closing...\n\r");
 	_logger->log(LogType::INFO, std::to_string(client.getId()) + " /quit : closing server");
 	_stop = true;
-	(void) client;
 }
 
 void		Server::leave(Client &client, std::deque<std::string>)
 {
-	// sendAll(client.getName() + " disconnected...\n\r");
 	this->_channel->removeClient(client);
 	client.setDisconnected(true);
-}
-
-void		Server::shell(Client &client, std::deque<std::string>)
-{
-	(void) client;
 }
 
 void		Server::list(Client &client, std::deque<std::string> args)
@@ -160,7 +83,8 @@ void		Server::list(Client &client, std::deque<std::string> args)
 			for (std::map<std::string, std::string>::iterator it = _db.getDB().begin(); it != _db.getDB().end(); it++)
 			{
 				std::string cli = LIST_CL(it->first);
-				send(client.getSocketFd(), cli.c_str(), cli.size(), 0);
+				if (findClientByName(it->first) == NULL)
+					send(client.getSocketFd(), cli.c_str(), cli.size(), 0);
 			}
 		}
 		else
@@ -168,70 +92,42 @@ void		Server::list(Client &client, std::deque<std::string> args)
 	}
 }
 
-void		Server::help(Client &client, std::deque<std::string>)
+void		Server::help(Client &client, std::deque<std::string> args)
 {
-	(void) client;
+	_logger->log(LogType::CMD, HELP_CMD(client.getId()));
+
+	if (args.size() > 1)
+		return (LogMsgClient(client, HELP_CL_BAD_FLAG, LogType::ERROR, HELP_LOG_BAD_FLAG(client.getId())));
+	
+	std::string msg = HELP_CL_CMD;
+	send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
 }
 
 void		Server::msg(Client &client, std::deque<std::string> args)
 {
-	(void) client;
-	(void) args;
+	std::string all_args;
+	
+	for (std::deque<std::string>::iterator it = args.begin(); it != args.end(); it++)
+	{
+		all_args += *it;
+		if (it != args.end())
+			all_args += " ";
+	}
+	sendAll(client, all_args);
 }
 
 void		Server::privMsg(Client &client, std::deque<std::string> args)
 {
-	(void) client;
-	(void) args;
+	_logger->log(LogType::CMD, PRIVMSG_CMD(client.getId()));
+
+	if (args.size() != 3)
+		return (LogMsgClient(client, PRIVMSG_CL_ERR_ARG, LogType::ERROR, PRIVMSG_LOG_ERR_ARG(client.getId())));
+
+	Client *target = findClientByName(args[1]);
+	if (target == NULL)
+		return (LogMsgClient(client, PRIVMSG_CL_ERR_USER_NOT_FOUND, LogType::ERROR, PRIVMSG_LOG_ERR_USER_NOT_FOUND(client.getId())));
+
+
+	std::string msg = MSG_CL(client.getName(), args[2]);
+	send(target->getSocketFd(), msg.c_str(), msg.size(), 0);
 }
-
-
-std::string	Server::checkPrivmsg(Client &client, std::deque<std::string> data)
-{
-	std::string	msg_to_send;
-
-	std::deque<std::string>	receiver = data;
-
-	receiver.pop_front();
-	if (receiver.size() == 0)
-		return (client.send_msg(ERR_NORECIPIENT(data[0])));
-	else if (receiver.size() == 1)
-		return (client.send_msg(ERR_NOTEXTTOSEND));
-	else if (receiver.size() > 2)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
-
-	receiver = parsingMultiArgs(data[1]);
-	msg_to_send = data[data.size() - 1];
-
-	for (std::deque<std::string>::iterator it = receiver.begin(); it != receiver.end(); it++)
-	{
-		if ((*it)[0] != '#')
-			this->sendToClient(*it, msg_to_send);
-		else
-			this->sendToChannel(client, *it, msg_to_send);
-	}
-	return ("");
-}
-
-/*void	Server::execMode(Client &client, std::deque<std::string> data, size_t &i, char token, char mode, Channel &channel)
-{
-	if (mode == 'i')
-		channel.execModeI(client, token);
-	else if (mode == 't')
-		channel.execModeT(client, token);
-	else if (mode == 'l')
-		channel.execModeL(client, data, i, token);
-	else if (data.size() <= i && token == '+')
-		client.send_msg(ERR_NEEDMOREPARAMS(client.getName(), data[0]));
-	else if (mode == 'k')
-		channel.execModeK(client, data, i, token);
-	else if (mode == 'o')
-	{
-		if (token == '-')
-			channel.removeOp(client, data, i);
-		else
-			channel.addOp(client, data, i);
-	}
-	else
-		client.send_msg(ERR_UNKNOWNMODE(client.getName(), mode));
-}*/

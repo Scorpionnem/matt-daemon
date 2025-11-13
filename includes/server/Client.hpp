@@ -21,8 +21,6 @@ class Client
 		size_t		_id;
 
 	public :
-		std::string		send_msg(std::string msg_error);
-
 		Client();
 		Client(int socket_fd, std::string ip, size_t id);
 		~Client();

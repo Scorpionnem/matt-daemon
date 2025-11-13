@@ -35,7 +35,6 @@ enum class Command
 	LOGIN,
 	QUIT,
 	LEAVE,
-	SHELL,
 	LIST,
 	HELP,
 	PRIVMSG,
@@ -62,51 +61,52 @@ class Server
 		
 		void		stopServer();
 
-		Command		CommandLexer(const std::string input);
-		void		ExecCommand(Command cmd, std::deque<std::string> args, Client &client);
+		Command		commandLexer(const std::string input);
+		void		execCommand(Command cmd, std::deque<std::string> args, Client &client);
 
 		void		login(Client &client, std::deque<std::string> args);
 		void		quit(Client &client, std::deque<std::string> args);
 		void		leave(Client &client, std::deque<std::string> args);
-		void		shell(Client &client, std::deque<std::string> args);
 		void		list(Client &client, std::deque<std::string> args);
 		void		help(Client &client, std::deque<std::string> args);
 		void		msg(Client &client, std::deque<std::string> args);
 		void		privMsg(Client &client, std::deque<std::string> args);
 
 
-		void		initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1]);
-		bool		add_client();
-		void		read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client);
-		bool		process_commands(Client &client);
+		void		initializePollFds(struct pollfd fds[NB_MAX_CLIENTS + 1]);
+		bool		addClient();
+		void		readAllClients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client);
+		bool		processCommands(Client &client);
 
-		std::string	checkUser(Client &client, std::deque<std::string> data);
-		std::string	checkPrivmsg(Client &client, std::deque<std::string> data);
-		std::string	checkPart(Client &client, std::deque<std::string> data);
 
-		void		sendToClient(std::string receiver, std::string msgToSend);
 		void 		sendToClient(Client &client, std::string msgToSend);
-		std::string sendToChannel(Client &sender, std::string channel, std::string msgToSend);
-		void		sendToClient(Client &client, std::string receiver, std::string msgToSend);
 
 		void		LogMsgClient(Client &client, std::string msg_cl, LogType type, std::string log_msg);
 
 		void		sendAll(std::string msg_cl);
-
-		// void		sendToAllClient(Client &client, std::string new_nickname);
+		void		sendAll(Client &client, std::string msg_cl);
 
 	public :
 		bool		running() {return (!_stop);}
-		void		commands_parsing(Client &client, std::string commande);
+		void		commandsParsing(Client &client, std::string commande);
 
 		Client*		findClientByName(std::string recipient);
 
-		void		joinChannel(Client &client, Channel &channel) const;
-
-		void		sendToAll(Client &client);
-
 		Server();
+		Server(const Server &cpy)
+		{
+			*this = cpy;
+		}
+		Server	&operator=(const Server &copy)
+		{
+			if (this != &copy)
+			{
+
+			}
+			return (*this);
+		}
 		~Server();
+
 
 		void		setup(Tintin_reporter &logger);
 		void		stop();
@@ -118,6 +118,5 @@ class Server
 };
 
 std::deque<std::string>	splitCommand(std::string input);
-std::deque<std::string>	parsingMultiArgs(std::string data);
 
 #endif

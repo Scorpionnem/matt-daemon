@@ -12,12 +12,6 @@
 
 #include "Client.hpp"
 
-std::string	Client::send_msg(std::string msg_error)
-{
-	send(this->getSocketFd(), msg_error.c_str(), msg_error.size(), 0);
-	return (msg_error);
-}
-
 Client::Client()
 {
 	this->_ip = "";

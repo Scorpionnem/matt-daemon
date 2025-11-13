@@ -13,6 +13,18 @@ class Channel
 		std::deque<Client*>	_list_client;
 	public :
 		Channel();
+		Channel(const Channel &cpy)
+		{
+			*this = cpy;
+		}
+		Channel	&operator=(const Channel &copy)
+		{
+			if (this != &copy)
+			{
+
+			}
+			return (*this);
+		}
 		~Channel();
 		
 		std::deque<Client*>&	getAllClient(void);
@@ -21,8 +33,6 @@ class Channel
 		void					removeClient(Client &client);
 		void					deleteClient(Client &client, std::deque<Client*> &list);
 
-		std::string				sendAllClient(Client &sender, std::string msg);
-		std::string				sendAllClientMsg(Client &sender, std::string msg);
 		Client*					findClientByName(std::string sender, std::deque<Client*> &list);
 
 };

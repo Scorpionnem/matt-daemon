@@ -12,64 +12,9 @@
 
 #include "Server.hpp"
 
-std::deque<std::string>	parsingMultiArgs(std::string data)
-{
-	std::deque<std::string> tab;
-
-	size_t found = data.find(',');
-	std::string	receiver;
-	while (found != std::string::npos)
-	{
-		receiver = data.substr(0, found);
-		data = data.substr(found + 1);
-		found = data.find(',');
-		if (receiver.size() != 0)
-			tab.push_back(receiver);
-	}
-	if (data.size() != 0)
-		tab.push_back(data);
-	return (tab);
-}
-
 void	Server::stopServer()
 {
 	this->_stop = true;
-}
-
-void	Server::joinChannel(Client &client, Channel &channel) const
-{
-	channel.addClient(client);
-}
-
-/*void	Server::sendToAllClient(Client &client, std::string new_nickname)
-{
-	std::string	toSend = CHANGENICKNAMEFORALL(client.getName(), client.getIp(), new_nickname);
-	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
-	{
-		send((*it)->getSocketFd(), toSend.c_str(), toSend.size(), 0);
-	}
-}*/
-
-std::string Server::sendToChannel(Client &sender, std::string channel, std::string msgToSend)
-{
-	std::string	msg = MSGSEND(channel, msgToSend);
-
-	this->_channel->sendAllClientMsg(sender, msg);
-	return ("");
-}
-
-void Server::sendToClient(Client &client, std::string receiver, std::string msgToSend)
-{
-	std::string	msg = client.getName() + " send you : " + MSGSEND(receiver, msgToSend);
-	
-	send(this->findClientByName(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
-}
-
-void Server::sendToClient(std::string receiver, std::string msgToSend)
-{
-	std::string	msg = MSGSEND(receiver, msgToSend);
-	
-	send(this->findClientByName(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
 }
 
 void Server::sendToClient(Client &client, std::string msgToSend)
@@ -111,7 +56,7 @@ std::deque<std::string>	splitCommand(std::string input)
 void	Server::runtime()
 {
 	bool	new_client = false;
-	initialize_poll_fds(fds);
+	initializePollFds(fds);
 
 	_pollFD = poll(fds, _client_list.size() + 1, -1);
 
@@ -120,14 +65,14 @@ void	Server::runtime()
 
 	if ((fds[0].revents & POLLIN) != 0)
 	{
-		new_client = add_client();
+		new_client = addClient();
 	}
 
 	if (new_client == true || this->_client_list.size() != 0)
-		read_all_clients(fds, new_client);
+		readAllClients(fds, new_client);
 }
 
-void	Server::initialize_poll_fds(struct pollfd fds[NB_MAX_CLIENTS + 1])
+void	Server::initializePollFds(struct pollfd fds[NB_MAX_CLIENTS + 1])
 {
 	fds[0].fd = this->getServerSocket();
 	fds[0].events = POLLIN;
@@ -152,7 +97,7 @@ Client*	Server::findClientByName(std::string recipient)
 	return (NULL);
 }
 
-bool	Server::add_client()
+bool	Server::addClient()
 {
 	sockaddr_in		addr;
 	unsigned int	len = 0;
@@ -180,17 +125,17 @@ bool	Server::add_client()
 	return (false);
 }
 
-void	Server::sendToAll(Client &client)
+void	Server::sendAll(Client &client, std::string msg_cl)
 {
 	for (std::vector<Client*>::iterator it = this->getListClient().begin(); it != this->getListClient().end(); it++)
 	{
-		std::string	msgLeave = USERDISCONNECTED(client.getName(), client.getIp(), (*it)->getName());
+		std::string	msg = MSG_CL(client.getName(), msg_cl);
 		if ((*it)->getName() != client.getName())
-			send((*it)->getSocketFd(), msgLeave.c_str(), msgLeave.size(), 0);
+			send((*it)->getSocketFd(), msg.c_str(), msg.size(), 0);
 	}
 }
 
-void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client)
+void	Server::readAllClients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_client)
 {
 	int		i = 1;
 	ssize_t size;
@@ -217,7 +162,7 @@ void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_cl
 				(*it)->setMessage(message);
 			} while (size == 1024);
 
-			this->process_commands(**it);
+			this->processCommands(**it);
 		}
 		i++;
 
@@ -233,30 +178,29 @@ void	Server::read_all_clients(struct pollfd fds[NB_MAX_CLIENTS + 1], bool new_cl
 	}
 }
 
-bool	Server::process_commands(Client &client)
+bool	Server::processCommands(Client &client)
 {
 	std::string message;
 	
 	message = client.getMessage();
 	if (!client.getDisconnected())
-		_logger->log(LogType::LOG, message); // disable this
+		_logger->log(LogType::LOG, message);
 	while (message.find("\n") != std::string::npos)
 	{
 		std::string command = message.substr(0, message.find("\n"));
 		message = message.substr(message.find("\n") + 1);
 		client.setMessage(message);
-		commands_parsing(client, command);
+		commandsParsing(client, command);
 	}
 	return (true);
 }
 
-Command	Server::CommandLexer(const std::string input)
+Command	Server::commandLexer(const std::string input)
 {
-	static const std::array<std::pair<const char*, Command>, 8> table = {{
+	static const std::array<std::pair<const char*, Command>, 7> table = {{
 	{"/login", Command::LOGIN},
 	{"/quit", Command::QUIT},
 	{"quit", Command::QUIT},
-	{"/shell", Command::SHELL},
 	{"/leave", Command::LEAVE},
 	{"/list", Command::LIST},
 	{"/msg", Command::PRIVMSG},
@@ -274,28 +218,24 @@ Command	Server::CommandLexer(const std::string input)
     return (Command::MSG);
 }
 
-void	Server::ExecCommand(Command cmd, std::deque<std::string> args, Client &client)
+void	Server::execCommand(Command cmd, std::deque<std::string> args, Client &client)
 {
-	Command cmds[8] = {Command::LOGIN, Command::QUIT,
-		Command::LEAVE, Command::SHELL, Command::LIST,
-		Command::HELP, Command::MSG, Command::PRIVMSG};
+	Command cmds[7] = {Command::LOGIN, Command::QUIT,
+		Command::LEAVE, Command::LIST, Command::HELP,
+		Command::PRIVMSG, Command::MSG};
     void (Server::*functptr[])(Client &, std::deque<std::string>) = {
         &Server::login,
         &Server::quit,
         &Server::leave,
-        &Server::shell,
         &Server::list,
         &Server::help,
         &Server::privMsg,
         &Server::msg
     };
-	if (cmd != Command::QUIT && cmd != Command::LOGIN && client.getLogin() == 0)
-	{
-		//add not be connected
-		sendToClient(client.getName(), "Please login first. (/login user pass)");//send to client "not be connected"
-		return ;
-	}
-	for (int j = 0; j <= 7; j++)
+	if (cmd != Command::HELP && cmd != Command::QUIT && cmd != Command::LOGIN && client.getLogin() == 0)
+		return (LogMsgClient(client, CL_NOT_LOGIN, LogType::ERROR, LOG_NOT_LOGIN(client.getId())));
+
+	for (int j = 0; j <= 6; j++)
 	{
 		if (cmd == cmds[j])
 		{
@@ -305,78 +245,18 @@ void	Server::ExecCommand(Command cmd, std::deque<std::string> args, Client &clie
 	}
 }
 
-void	Server::commands_parsing(Client &client, std::string input)
+void	Server::commandsParsing(Client &client, std::string input)
 {
-    (void) client;
 	std::deque<std::string>		list_arg;
 
 	if (input.size() == 0)
 		return ;
 	list_arg = splitCommand(input);
-    for (std::deque<std::string>::iterator it = list_arg.begin(); it != list_arg.end(); it++)
-    {
-        std::cout << "args = " << *it << std::endl;
-    }
-	Command cmd = CommandLexer(list_arg[0]);
-	if (client.getLogin() == 0 && cmd != Command::LOGIN && cmd != Command::QUIT)
-		return ; // err not be connected 
+	Command cmd = commandLexer(list_arg[0]);
 	if (cmd == Command::QUIT && list_arg.size() != 1 && list_arg[0][0] != '/')
 		cmd = Command::MSG;
-	ExecCommand(cmd, list_arg, client);
-	/*if (list_arg[0] == "USER")
-		checkUser(client, list_arg);
-	else if (list_arg[0] == "NICK")
-		checkNick(client, list_arg);
-	else if ((client.getName().size() == 0 || client.getUsername().size() == 0) && client.getLogin() == 0)
-	{
-		std::string	msg = NOTAUTHENTIFICATED;
-		send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
-		return ;
-	}
-    else if (client.getName().size() != 0 && client.getUsername().size() != 0 && client.getLogin() == 0)
-    {
-        client.setLogStatus(1);
-        this->joinChannel(client, *_channel);
-    }
-    if (client.getLogin() == 0)
-    {
-        return ;
-    }
-
-	if (list_arg[0] == "PRIVMSG")
-		checkPrivmsg(client, list_arg);*/
-	/*else if (list_arg[0] == "JOIN")
-		checkJoin(client, list_arg);
-	else if (list_arg[0] == "MODE")
-		checkMode(client, list_arg);
-	else if (list_arg[0] == "KICK")
-		checkKick(client, list_arg);
-	else if (list_arg[0] == "TOPIC")
-		checkTopic(client, list_arg);
-	else if (list_arg[0] == "INVITE")
-		checkInvite(client, list_arg);
-	else if (list_arg[0] == "PART")
-		checkPart(client, list_arg);
-	else if (list_arg[0] != "WHO" && client.getName().size() != 0 && client.getUsername().size() != 0)
-	{
-		std::string	msg = ERR_UNKNOWNCOMMAND(client.getName(), list_arg[0]);
-		send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
-	}*/
+	execCommand(cmd, list_arg, client);
 }
-
-/*Server::Server(int port, std::string password)
-{
-	this->_password = password;
-	this->_server_socket = socket(AF_INET, SOCK_STREAM, 0);
-	this->_serverAddress.sin_family = AF_INET;
-	this->_serverAddress.sin_port = htons(port);
-	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
-
-	bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress,
-		sizeof(this->_serverAddress));
-	listen(this->getServerSocket(), 5);
-	runtime();
-}*/
 
 Server::Server()
 {}
