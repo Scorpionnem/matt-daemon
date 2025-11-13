@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:46:21 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 10:46:51 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 08:26:31 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,12 @@ std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
 
 void	Server::login(Client &client, std::deque<std::string> args)
 {
+	if (args.size() != 3)
+	{
+		std::cout << "Invalid arguments (/login user pass)" << std::endl;
+		return ;
+	}
+
 	std::cout << client.getLogin() << std::endl;
 	if (client.getLogin() == true)
 		std::cout << "true" << std::endl;
@@ -106,6 +112,7 @@ void	Server::login(Client &client, std::deque<std::string> args)
 
 void		Server::quit(Client &client, std::deque<std::string>)
 {
+	_stop = true;
 	(void) client;
 }
 

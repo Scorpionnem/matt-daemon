@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 13:09:33 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 08:37:07 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	MattDaemon::start()
 {
 	if (!_init())
 		return ;
-	while (_running)
+	while (_server.running())
 	{
 		if (_checkSignals())
 			break ;
@@ -46,10 +46,16 @@ bool	MattDaemon::_init()
 	try {
 		if (_daemonize())
 			return (false);
+	} catch (const std::exception &e) {
+		_logger.log(LogType::ERROR, std::string(e.what()));
+		return (false);
+	}
 
+	try {
 		_server.setup(_logger);
 	} catch (const std::exception &e) {
 		_logger.log(LogType::ERROR, std::string(e.what()));
+		_stop();
 		return (false);
 	}
 

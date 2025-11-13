@@ -45,11 +45,11 @@ enum class Command
 class Server
 {
 	private :
-		int						_server_socket;
+		int						_server_socket = -1;
 		sockaddr_in 			_serverAddress;
 		std::vector<Client*>	_client_list;
-		Channel					*_channel;
-		Tintin_reporter			*_logger;
+		Channel					*_channel = NULL;
+		Tintin_reporter			*_logger = NULL;
 
 		bool					_stop = false;
 
@@ -85,6 +85,7 @@ class Server
 		void		sendToAllClient(Client &client, std::string new_nickname);
 
 	public :
+		bool		running() {return (!_stop);}
 		void		commands_parsing(Client &client, std::string commande);
 
 		Client*		findClientByNick(std::string recipient);

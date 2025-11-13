@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:46:19 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 16:10:12 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 08:39:25 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,16 +280,19 @@ void	Server::ExecCommand(Command cmd, std::deque<std::string> args, Client &clie
         &Server::privMsg,
         &Server::msg
     };
-	if (cmd != Command::LOGIN && client.getLogin() == 0)
+	if (cmd != Command::QUIT && cmd != Command::LOGIN && client.getLogin() == 0)
 	{
 		//add not be connected
-		sendToClient(client, client.getNickname(), "not be connected");//send to client "not be connected"
+		sendToClient(client, client.getNickname(), "Please login first. (/login user pass)");//send to client "not be connected"
 		return ;
 	}
 	for (int j = 0; j <= 7; j++)
 	{
 		if (cmd == cmds[j])
+		{
 			(this->*functptr[j])(client, args);
+			break ;
+		}
 	}
 }
 
@@ -306,7 +309,7 @@ void	Server::commands_parsing(Client &client, std::string input)
         std::cout << "args = " << *it << std::endl;
     }
 	Command cmd = CommandLexer(list_arg[0]);
-	if (client.getLogin() == 0 && cmd != Command::LOGIN)
+	if (client.getLogin() == 0 && cmd != Command::LOGIN && cmd != Command::QUIT)
 		return ; // err not be connected 
 	if (cmd == Command::QUIT && list_arg.size() != 1 && list_arg[0][0] != '/')
 		cmd = Command::MSG;
@@ -374,13 +377,22 @@ void	Server::setup(Tintin_reporter &logger)
 	_logger = &logger;
 	_logger->log(LogType::INFO, "Starting server");
 	this->_server_socket = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->_server_socket == -1)
+		throw std::runtime_error(strerror(errno));
 	this->_serverAddress.sin_family = AF_INET;
 	this->_serverAddress.sin_port = htons(7002);
 	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-	bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress,
-		sizeof(this->_serverAddress));
-	listen(this->getServerSocket(), 3);
+	if (bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress, sizeof(this->_serverAddress)) == -1)
+	{
+		close(_server_socket);
+		throw std::runtime_error(strerror(errno));
+	}
+	if (listen(this->getServerSocket(), 3) == -1)
+	{
+		close(_server_socket);
+		throw std::runtime_error(strerror(errno));
+	}
 	_logger->log(LogType::INFO, "Server started");
 	_channel = new Channel;
 }
@@ -392,8 +404,10 @@ void	Server::stop()
 		close((*it)->getSocketFd());
 		delete (*it);
 	}
-	delete (_channel);
-	close(_server_socket);
+	if (_channel)
+		delete (_channel);
+	if (_server_socket != -1)
+		close(_server_socket);
 	_logger->log(LogType::INFO, "Server closed.");
 }
 
