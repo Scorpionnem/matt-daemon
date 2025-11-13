@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 13:35:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 13:30:48 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 16:16:31 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 void	Tintin_reporter::init()
 {
-	std::string logFilePath = MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
+	std::string logFilePath = VAR_LOG_PATH MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
 
-	if (!std::filesystem::exists(MATT_DAEMON_LOG_PATH))
-		std::filesystem::create_directories(MATT_DAEMON_LOG_PATH);
+	if (!std::filesystem::exists(VAR_LOG_PATH MATT_DAEMON_LOG_PATH))
+		std::filesystem::create_directories(VAR_LOG_PATH MATT_DAEMON_LOG_PATH);
 
 	_file.open(logFilePath, std::ios::app);
 	if (!_file.is_open())
