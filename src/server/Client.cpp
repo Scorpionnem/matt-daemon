@@ -21,21 +21,18 @@ std::string	Client::send_msg(std::string msg_error)
 Client::Client()
 {
 	this->_ip = "";
-	this->setUsername("");
-	this->setRealName("");
-	this->setNickname("");
-	this->setStatus(0);
+	this->setName("");
+	this->setLogStatus(0);
 	this->setSocketFd(-1);
 	this->setDisconnected(false);
 }
 
-Client::Client(int socket_fd, std::string ip)
+Client::Client(int socket_fd, std::string ip, size_t id)
 {
 	this->_ip = ip;
-	this->setUsername("");
-	this->setRealName("");
-	this->setNickname("");
-	this->setStatus(0);
+	this->_id = id;
+	this->setName("");
+	this->setLogStatus(0);
 	this->setSocketFd(socket_fd);
 	this->setDisconnected(false);
 }
@@ -51,9 +48,7 @@ Client::Client(const Client &obj)
 Client	&Client::operator=(const Client &obj)
 {
 	_ip = obj._ip;
-	_username = obj._username;
-	_real_name = obj._real_name;
-	_nickname = obj._nickname;
+	_name = obj._name;
 	_isLogged = obj._isLogged;
 	_socket_fd = obj._socket_fd;
 	_message_buffer = obj._message_buffer;
@@ -66,20 +61,14 @@ std::string	Client::getIp(void)
 	return (this->_ip);
 }
 
-
-std::string	Client::getUsername(void)
+size_t Client::getId(void)
 {
-	return (this->_username);
+	return (this->_id);
 }
 
-std::string	Client::getRealName(void)
+std::string	Client::getName(void)
 {
-	return (this->_real_name);
-}
-
-std::string	Client::getNickname(void)
-{
-	return (this->_nickname);
+	return (this->_name);
 }
 
 int	Client::getLogin()
@@ -102,22 +91,12 @@ bool	Client::getDisconnected()
 	return (this->_disconnected);
 }
 
-void	Client::setUsername(std::string username)
+void	Client::setName(std::string name)
 {
-	this->_username = username;
+	this->_name = name;
 }
 
-void	Client::setRealName(std::string real_name)
-{
-	this->_real_name = real_name;
-}
-
-void	Client::setNickname(std::string nickname)
-{
-	this->_nickname = nickname;
-}
-
-void	Client::setStatus(int status)
+void	Client::setLogStatus(int status)
 {
 	this->_isLogged = status;
 }

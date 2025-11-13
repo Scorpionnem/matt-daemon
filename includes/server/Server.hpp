@@ -23,6 +23,7 @@
 # include <array>
 # include "Define.hpp"
 # include "Channel.hpp"
+# include "UsersDatabase.hpp"
 
 # include "Tintin_reporter.hpp"
 
@@ -51,6 +52,9 @@ class Server
 		std::vector<Client*>	_client_list;
 		Channel					*_channel = NULL;
 		Tintin_reporter			*_logger = NULL;
+		size_t					_id = 0;
+		UsersDatabase			_db;
+
 
 		bool					_stop = false;
 
@@ -77,19 +81,22 @@ class Server
 		bool		process_commands(Client &client);
 
 		std::string	checkUser(Client &client, std::deque<std::string> data);
-		std::string	checkNick(Client &client, std::deque<std::string> list_arg);
 		std::string	checkPrivmsg(Client &client, std::deque<std::string> data);
 		std::string	checkPart(Client &client, std::deque<std::string> data);
 
-		std::string sendToClient(Client &sender, std::string receiver, std::string msgToSend);
+		void		sendToClient(std::string receiver, std::string msgToSend);
+		void 		sendToClient(Client &client, std::string msgToSend);
 		std::string sendToChannel(Client &sender, std::string channel, std::string msgToSend);
-		void		sendToAllClient(Client &client, std::string new_nickname);
+		void		sendToClient(Client &client, std::string receiver, std::string msgToSend);
+
+		// void		sendToAllClient(Client &client, std::string new_nickname);
 
 	public :
 		bool		running() {return (!_stop);}
 		void		commands_parsing(Client &client, std::string commande);
 
 		Client*		findClientByNick(std::string recipient);
+
 		void		joinChannel(Client &client, Channel &channel) const;
 
 		void		sendToAll(Client &client);

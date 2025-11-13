@@ -13,36 +13,32 @@ class Client
 {
 	private :
 		std::string	_ip;
-		std::string	_username;
-		std::string	_real_name;
-		std::string	_nickname;
+		std::string	_name;
 		int			_isLogged;
 		int			_socket_fd;
 		std::string	_message_buffer;
 		bool		_disconnected;
+		size_t		_id;
 
 	public :
 		std::string		send_msg(std::string msg_error);
 
 		Client();
-		Client(int socket_fd, std::string ip);
+		Client(int socket_fd, std::string ip, size_t id);
 		~Client();
 		Client(const Client &obj);
 
 		Client		&operator=(const Client &obj);
 
-		void		setUsername(std::string username);
-		void		setRealName(std::string real_name);
-		void		setNickname(std::string nickname);
-		void		setStatus(int status);
+		void		setName(std::string name);
+		void		setLogStatus(int status);
 		void		setSocketFd(int socket_fd);
 		void		setMessage(std::string message);
 		void		setDisconnected(bool status);
 
 		std::string	getIp(void);
-		std::string	getUsername(void);
-		std::string	getRealName(void);
-		std::string	getNickname(void);
+		size_t		getId(void);
+		std::string	getName(void);
 		int			getLogin(void);
 		int			getSocketFd(void);
 		std::string	getMessage(void);

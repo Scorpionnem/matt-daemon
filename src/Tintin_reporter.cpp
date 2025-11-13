@@ -47,6 +47,9 @@ void	Tintin_reporter::log(LogType type, const std::string &str)
 		case LogType::ERROR:
 			header = "[ ERROR ] - ";
 			break ;
+		case LogType::CMD:
+			header = "[ CMD ] - ";
+			break ;
 		default :
 			header = " ";
 			break ;

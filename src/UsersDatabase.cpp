@@ -68,7 +68,7 @@ void	UsersDatabase::loadDB()
 {
 	std::ifstream	file(USERSDB_FILE);
 	if (!file.is_open())
-		throw std::runtime_error("Failed to open" USERSDB_FILE);
+		return ;
 	
 	std::string	line;
 

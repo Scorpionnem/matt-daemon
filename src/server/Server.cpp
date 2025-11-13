@@ -41,31 +41,42 @@ void	Server::joinChannel(Client &client, Channel &channel) const
 	channel.addClient(client);
 }
 
-void	Server::sendToAllClient(Client &client, std::string new_nickname)
+/*void	Server::sendToAllClient(Client &client, std::string new_nickname)
 {
-	std::string	toSend = CHANGENICKNAMEFORALL(client.getNickname(), client.getUsername(), client.getIp(), new_nickname);
+	std::string	toSend = CHANGENICKNAMEFORALL(client.getName(), client.getIp(), new_nickname);
 	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
 	{
 		send((*it)->getSocketFd(), toSend.c_str(), toSend.size(), 0);
 	}
-}
+}*/
 
 std::string Server::sendToChannel(Client &sender, std::string channel, std::string msgToSend)
 {
-	std::string	msg = MSGSEND(sender.getNickname(), sender.getUsername(), sender.getIp(), channel, msgToSend);
+	std::string	msg = MSGSEND(channel, msgToSend);
 
 	this->_channel->sendAllClientMsg(sender, msg);
 	return ("");
 }
 
-std::string Server::sendToClient(Client &sender, std::string receiver, std::string msgToSend)
+void Server::sendToClient(Client &client, std::string receiver, std::string msgToSend)
 {
-	std::string	msg = MSGSEND(sender.getNickname(), sender.getUsername(), sender.getIp(), receiver, msgToSend);
+	std::string	msg = client.getName() + " send you : " + MSGSEND(receiver, msgToSend);
 	
-	if (this->findClientByNick(receiver) == NULL)
-		return (sender.send_msg(ERR_NOSUCHNICK(sender.getNickname(), receiver)));
 	send(this->findClientByNick(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
-	return ("");
+}
+
+void Server::sendToClient(std::string receiver, std::string msgToSend)
+{
+	std::string	msg = MSGSEND(receiver, msgToSend);
+	
+	send(this->findClientByNick(receiver)->getSocketFd(), msg.c_str(), msg.size(), 0);
+}
+
+void Server::sendToClient(Client &client, std::string msgToSend)
+{
+	std::string	msg = MSGSEND(client.getName(), msgToSend);
+	
+	send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
 }
 
 
@@ -137,7 +148,7 @@ Client*	Server::findClientByNick(std::string recipient)
 {
 	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
 	{
-		if ((*it)->getNickname() == recipient)
+		if ((*it)->getName() == recipient)
 			return ((*it));
 	}
 	return (NULL);
@@ -161,7 +172,7 @@ bool	Server::add_client()
 		{
 			char	ip[INET_ADDRSTRLEN];
 			inet_ntop(AF_INET, &addr, ip, INET_ADDRSTRLEN);
-			Client	*new_client = new Client(clientSocket, ip);
+			Client	*new_client = new Client(clientSocket, ip, _id++);
 			_logger->log(LogType::LOG, "New client joined with fd: " + std::to_string(clientSocket));
 			this->_client_list.push_back(new_client);
             this->_channel->addClient(*new_client);
@@ -175,8 +186,8 @@ void	Server::sendToAll(Client &client)
 {
 	for (std::vector<Client*>::iterator it = this->getListClient().begin(); it != this->getListClient().end(); it++)
 	{
-		std::string	msgLeave = USERDISCONNECTED(client.getNickname(), client.getUsername(), client.getIp(), (*it)->getNickname());
-		if ((*it)->getNickname() != client.getNickname())
+		std::string	msgLeave = USERDISCONNECTED(client.getName(), client.getIp(), (*it)->getName());
+		if ((*it)->getName() != client.getName())
 			send((*it)->getSocketFd(), msgLeave.c_str(), msgLeave.size(), 0);
 	}
 }
@@ -283,7 +294,7 @@ void	Server::ExecCommand(Command cmd, std::deque<std::string> args, Client &clie
 	if (cmd != Command::QUIT && cmd != Command::LOGIN && client.getLogin() == 0)
 	{
 		//add not be connected
-		sendToClient(client, client.getNickname(), "Please login first. (/login user pass)");//send to client "not be connected"
+		sendToClient(client.getName(), "Please login first. (/login user pass)");//send to client "not be connected"
 		return ;
 	}
 	for (int j = 0; j <= 7; j++)
@@ -318,15 +329,15 @@ void	Server::commands_parsing(Client &client, std::string input)
 		checkUser(client, list_arg);
 	else if (list_arg[0] == "NICK")
 		checkNick(client, list_arg);
-	else if ((client.getNickname().size() == 0 || client.getUsername().size() == 0) && client.getLogin() == 0)
+	else if ((client.getName().size() == 0 || client.getUsername().size() == 0) && client.getLogin() == 0)
 	{
 		std::string	msg = NOTAUTHENTIFICATED;
 		send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
 		return ;
 	}
-    else if (client.getNickname().size() != 0 && client.getUsername().size() != 0 && client.getLogin() == 0)
+    else if (client.getName().size() != 0 && client.getUsername().size() != 0 && client.getLogin() == 0)
     {
-        client.setStatus(1);
+        client.setLogStatus(1);
         this->joinChannel(client, *_channel);
     }
     if (client.getLogin() == 0)
@@ -348,9 +359,9 @@ void	Server::commands_parsing(Client &client, std::string input)
 		checkInvite(client, list_arg);
 	else if (list_arg[0] == "PART")
 		checkPart(client, list_arg);
-	else if (list_arg[0] != "WHO" && client.getNickname().size() != 0 && client.getUsername().size() != 0)
+	else if (list_arg[0] != "WHO" && client.getName().size() != 0 && client.getUsername().size() != 0)
 	{
-		std::string	msg = ERR_UNKNOWNCOMMAND(client.getNickname(), list_arg[0]);
+		std::string	msg = ERR_UNKNOWNCOMMAND(client.getName(), list_arg[0]);
 		send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
 	}*/
 }
@@ -376,6 +387,7 @@ void	Server::setup(Tintin_reporter &logger)
 {
 	_logger = &logger;
 	_logger->log(LogType::INFO, "Starting server");
+	_db.loadDB();
 	this->_server_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_server_socket == -1)
 		throw std::runtime_error(strerror(errno));
@@ -406,6 +418,7 @@ void	Server::setup(Tintin_reporter &logger)
 
 void	Server::stop()
 {
+	_db.exportDB();
 	for (std::vector<Client*>::iterator it = this->_client_list.begin(); it != this->_client_list.end(); it++)
 	{
 		close((*it)->getSocketFd());

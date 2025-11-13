@@ -21,7 +21,7 @@
 #include <map>
 #include <fstream>
 
-# define USERSDB_FILE "users"
+# define USERSDB_FILE "/home/matde-ol/Desktop/matt-deamon/users"
 
 class	UsersDatabase
 {

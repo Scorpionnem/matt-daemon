@@ -1,6 +1,10 @@
 #ifndef DEFINE_HPP
 # define DEFINE_HPP
 
+//LOGIN
+
+
+//PRIVMSG
 # define ERR_ALREADYREGISTRED ":127.0.0.1 462 :You may not reregister\r\n"
 # define ERR_PASSWDMISMATCH ":127.0.0.1 464 :Password incorrect\r\n"
 # define ERR_NEEDMOREPARAMS(name, cmd) ":127.0.0.1 461 " + name + " " + cmd + " :Not enough parameters\r\n"
@@ -8,14 +12,14 @@
 # define AUTHENTIFICATED(name) ":127.0.0.1 " + name + " :Your are authentificated\r\n"
 # define NOTAUTHENTIFICATED ":127.0.0.1 :Your are not authentificated\r\n"
 # define ERR_NOTREGISTERED ":127.0.0.1 451 :You have not registered\r\n"
-# define ERR_NICKNAMEINUSE(name) ":127.0.0.1 433 " + name + " :Nickname is already in use\r\n"
+# define ERR_NICKNAMEINUSE(name) ":127.0.0.1 433 " + name + " :Name is already in use\r\n"
 # define ERR_NONICKNAMEGIVEN ":127.0.0.1 431 :No nickname given\r\n"
 
 # define QUIT(nameLeave, userNameLeave, ipLeave) ":" + nameLeave + "!" + userNameLeave + "@" + ipLeave + " QUIT :Client Quit\r\n"
-# define CHANGENICKNAME(name) ":127.0.0.1 " + name + " :You have changed your Nickname\r\n"
-# define CHANGENICKNAMEFORALL(name, userName, ipUser, newNickname) ":" + name + "!" + userName + "@" + ipUser + " NICK :" + newNickname + "\r\n"
+# define CHANGENICKNAME(name) ":127.0.0.1 " + name + " :You have changed your Name\r\n"
+# define CHANGENICKNAMEFORALL(name, ipUser, newName) ":" + name + "!" + "@" + ipUser + " NICK :" + newName + "\r\n"
 
-# define SELECTNICKNAME(name) ":127.0.0.1 " + name + " :You have choose your Nickname\r\n"
+# define SELECTNICKNAME(name) ":127.0.0.1 " + name + " :You have choose your Name\r\n"
 # define SELECTUSER(name) ":127.0.0.1 " + name + " :You have choose your User and Realname\r\n"
 # define ERR_NOSUCHNICK(name, nameSuch) ":127.0.0.1 401 " + name + " " + nameSuch + " :No such nick/channel\r\n"
 # define ERR_NOSUCHCHANNEL(name) ":127.0.0.1 403 " + name + " :No such channel\r\n"
@@ -26,11 +30,11 @@
 # define ERR_BADCHANNELKEY(channel) ":127.0.0.1 475 " + channel + " :Cannot join channel (+k)\r\n"
 # define ERR_CHANNELISFULL(name, channel) ":127.0.0.1 471 " + name + " " + channel + " :Cannot join channel (+l) - channel is full, try again later\r\n"
 
-# define MSGSEND(nameSender, userNameSender, ipSender, nickReceiver, msg) ":" + nameSender + "!" + userNameSender + "@" + ipSender + " PRIVMSG " + nickReceiver + " " + msg + "\r\n"
+# define MSGSEND(nameReceiver, msg) nameReceiver + " " + msg + "\r\n"
 # define MSGJOIN(nameSender, userNameSender, ipSender) ":" + nameSender + "!" + userNameSender + "@" + ipSender + " JOIN " + "\r\n"
 
 # define CHANNELLEAVE(nameSender, userNameSender, ipSender, channelReceiver) ":" + nameSender + "!" + userNameSender + "@" + ipSender + " " + channelReceiver + " :Leave\r\n"
-# define USERDISCONNECTED(nameSender, userNameSender, ipSender, nickReceiver) ":" + nameSender + "!" + userNameSender + "@" + ipSender + " " + nickReceiver + " Disconnected\r\n"
+# define USERDISCONNECTED(nameSender, ipSender, nickReceiver) ":" + nameSender + "!" + "@" + ipSender + " " + nickReceiver + " Disconnected\r\n"
 
 # define CHANNELMODE(name, channel, msg) ":127.0.0.1 324 " + name + " " + channel + " " + msg + "\r\n"
 # define CHANNELMODEJOIN(channel, msg) ":127.0.0.1 324 " + channel + " " + msg + "\r\n"
@@ -46,7 +50,7 @@
 # define INVITESENDER(nameSender, invited, channel) ":127.0.0.1 341 " + nameSender + " " + invited + " " + channel + "\r\n"
 
 # define KICK(nameReceiver, userNameReceiver, ipReceiver, userKicked, channel, msg) ":" + nameReceiver + "!" + userNameReceiver + "@" + ipReceiver + " KICK " + channel + " " + userKicked + msg + "\r\n"
-# define LEAVE(nameReceiver, userNameReceiver, ipReceiver, msg) ":" + nameReceiver + "!" + userNameReceiver + "@" + ipReceiver + " PART " + " " + msg + "\r\n"
+# define LEAVE(nameReceiver, ipReceiver, msg) ":" + nameReceiver + "!" + "@" + ipReceiver + " PART " + " " + msg + "\r\n"
 
 # define ERR_UNKNOWNMODE(name, char) ":127.0.0.1 472 " + name + " " + char + " :is unknown mode char to me\r\n"
 # define ERR_NOTONCHANNEL(name, channel) ":127.0.0.1 442 " + name + " " + channel + " :You're not on that channel\r\n"

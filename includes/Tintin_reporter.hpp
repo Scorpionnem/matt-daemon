@@ -41,6 +41,7 @@ enum class LogType
 	INFO,
 	// Used when logging errors
 	ERROR,
+	CMD,
 	NONE,
 };
 

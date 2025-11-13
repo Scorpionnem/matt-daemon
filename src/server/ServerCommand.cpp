@@ -16,9 +16,9 @@
 std::string	Server::checkPart(Client &client, std::deque<std::string> data)
 {
 	if (data.size() == 1)
-		return (client.send_msg(ERR_NEEDMOREPARAMS(client.getNickname(), data[0])));
+		return (client.send_msg(ERR_NEEDMOREPARAMS(client.getName(), data[0])));
 	else if (data.size() > 3)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getNickname(), data[0])));
+		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
 
 	std::deque<std::string>	channel = parsingMultiArgs(data[1]);
 	for (std::deque<std::string>::iterator it = channel.begin(); it != channel.end(); it++)
@@ -30,7 +30,7 @@ std::string	Server::checkPart(Client &client, std::deque<std::string> data)
 			msg = ":" + data[2];
 		else
 			msg += data[2];
-		_channel->sendAllClient(client, LEAVE(client.getNickname(), client.getUsername(), client.getIp(), msg));
+		_channel->sendAllClient(client, LEAVE(client.getName(), client.getIp(), msg));
 		_channel->deleteClient(client, _channel->getAllClient());
 	}
 	return ("");
@@ -38,36 +38,28 @@ std::string	Server::checkPart(Client &client, std::deque<std::string> data)
 
 std::string	Server::checkUser(Client& client, std::deque<std::string> data)
 {
-	if (client.getRealName() != "")
-		return (client.send_msg(ERR_ALREADYREGISTRED));
-
 	if (data.size() < 5)
-		return (client.send_msg(ERR_NEEDMOREPARAMS(client.getNickname(), data[0])));
+		return (client.send_msg(ERR_NEEDMOREPARAMS(client.getName(), data[0])));
 	else if (data.size() > 5)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getNickname(), data[0])));
-
-	if (client.getUsername().size() != 0)
-			return (client.send_msg(ERR_ALREADYREGISTRED));
+		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
 
 	for (std::deque<std::string>::iterator it = data.begin(); it != data.end(); it++)
 	{
 		if ((*it).find('@') != std::string::npos || (*it).find('#') != std::string::npos)
-			return (client.send_msg(ERR_TOOMANYPARAMS(client.getNickname(), data[0])));
+			return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
 	}
 
-	client.setUsername(data[1]);
-	client.setRealName(data[4]);
-	if (client.getNickname().size() != 0)
-		client.setStatus(true);
-	if (client.getUsername().size() != 0 && client.getNickname().size() != 0)
-	{
-		client.send_msg(SELECTUSER(client.getUsername()));
-		return (client.send_msg(AUTHENTIFICATED(client.getNickname())));
-	}
-	return (client.send_msg(SELECTUSER(client.getUsername())));
+	if (client.getName().size() != 0)
+		client.setLogStatus(true);
+	// if (client.getName().size() != 0)
+	// {
+		// client.send_msg(SELECTUSER(client.getUsername()));
+	return (client.send_msg(AUTHENTIFICATED(client.getName())));
+	// }
+	// return (client.send_msg(SELECTUSER(client.getUsername())));
 }
 
-std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
+/*std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
 {
 
 	if (list_arg.size() == 1 || list_arg[1] == "")
@@ -77,37 +69,59 @@ std::string	Server::checkNick(Client &client, std::deque<std::string> list_arg)
 		return (client.send_msg(ERR_NICKNAMEINUSE(list_arg[1])));
 
 	if (list_arg[1].find('@') != std::string::npos || list_arg[1].find('#') != std::string::npos)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getNickname(), list_arg[1])));
+		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), list_arg[1])));
 
-	if (client.getNickname().size() == 0)
+	if (client.getName().size() == 0)
 	{
-		client.setNickname(list_arg[1]);
-		if (client.getUsername().size() != 0)
-			return (client.send_msg(AUTHENTIFICATED(client.getNickname())));
-		return (client.send_msg(SELECTNICKNAME(client.getNickname())));	
+		client.setName(list_arg[1]);
+		// if (client.getUsername().size() != 0)
+		// 	return (client.send_msg(AUTHENTIFICATED(client.getName())));
+		return (client.send_msg(SELECTNICKNAME(client.getName())));	
 	}
 	this->sendToAllClient(client, list_arg[1]);
-	client.setNickname(list_arg[1]);
+	client.setName(list_arg[1]);
 	return ("");
-}
+}*/
 
 void	Server::login(Client &client, std::deque<std::string> args)
 {
+	//add function to write in log the cmd
+	_logger->log(LogType::CMD, std::to_string(client.getId()) + " used /login");
 	if (args.size() != 3)
 	{
-		std::cout << "Invalid arguments (/login user pass)" << std::endl;
+		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " failed /login");
+		sendToClient(client, "/login : Invalid arguments");
 		return ;
 	}
 
-	std::cout << client.getLogin() << std::endl;
 	if (client.getLogin() == true)
-		std::cout << "true" << std::endl;
-	else
-		std::cout << "false" << std::endl;
-	if (client.getLogin() == true)
+	{
+		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " used /login : Already connected");
+		sendToClient(client, "/login : You're already connected");
 		return ; // add logger + msg already connected
-	(void) args;
-	(void) client;
+	}
+
+	if (this->findClientByNick(args[1]) != NULL)
+	{
+		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " used /login : Can't used this name");
+		sendToClient(client, "/login : Choosed another name");
+		return ; //error
+	}
+
+	else if (_db.userExists(args[1]) == false)
+		_db.addUser(args[1], args[2]);
+
+	else if (_db.passMatch(args[1], args[2]) == false)
+	{
+		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " used /login : Wrong password");
+		sendToClient(client, "/login : Wrong password");
+		return ;
+	}
+
+	client.setLogStatus(true);
+	client.setName(args[1]);
+	_logger->log(LogType::INFO, std::to_string(client.getId()) + " used /login : Connexion successfull");
+	sendToClient(client, "/login : Connexion successfull");
 }
 
 void		Server::quit(Client &client, std::deque<std::string>)
@@ -161,7 +175,7 @@ std::string	Server::checkPrivmsg(Client &client, std::deque<std::string> data)
 	else if (receiver.size() == 1)
 		return (client.send_msg(ERR_NOTEXTTOSEND));
 	else if (receiver.size() > 2)
-		return (client.send_msg(ERR_TOOMANYPARAMS(client.getNickname(), data[0])));
+		return (client.send_msg(ERR_TOOMANYPARAMS(client.getName(), data[0])));
 
 	receiver = parsingMultiArgs(data[1]);
 	msg_to_send = data[data.size() - 1];
@@ -169,7 +183,7 @@ std::string	Server::checkPrivmsg(Client &client, std::deque<std::string> data)
 	for (std::deque<std::string>::iterator it = receiver.begin(); it != receiver.end(); it++)
 	{
 		if ((*it)[0] != '#')
-			this->sendToClient(client, *it, msg_to_send);
+			this->sendToClient(*it, msg_to_send);
 		else
 			this->sendToChannel(client, *it, msg_to_send);
 	}
@@ -185,7 +199,7 @@ std::string	Server::checkPrivmsg(Client &client, std::deque<std::string> data)
 	else if (mode == 'l')
 		channel.execModeL(client, data, i, token);
 	else if (data.size() <= i && token == '+')
-		client.send_msg(ERR_NEEDMOREPARAMS(client.getNickname(), data[0]));
+		client.send_msg(ERR_NEEDMOREPARAMS(client.getName(), data[0]));
 	else if (mode == 'k')
 		channel.execModeK(client, data, i, token);
 	else if (mode == 'o')
@@ -196,5 +210,5 @@ std::string	Server::checkPrivmsg(Client &client, std::deque<std::string> data)
 			channel.addOp(client, data, i);
 	}
 	else
-		client.send_msg(ERR_UNKNOWNMODE(client.getNickname(), mode));
+		client.send_msg(ERR_UNKNOWNMODE(client.getName(), mode));
 }*/
