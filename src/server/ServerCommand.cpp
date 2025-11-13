@@ -83,45 +83,33 @@ std::string	Server::checkUser(Client& client, std::deque<std::string> data)
 	return ("");
 }*/
 
+void	Server::LogMsgClient(Client &client, std::string msg_cl, LogType type, std::string log_msg)
+{
+	sendToClient(client, msg_cl);
+	_logger->log(type, log_msg);
+}
+
 void	Server::login(Client &client, std::deque<std::string> args)
 {
-	//add function to write in log the cmd
-	_logger->log(LogType::CMD, std::to_string(client.getId()) + " used /login");
+	_logger->log(LogType::CMD, LOGIN_CMD(client.getId()));
+
 	if (args.size() != 3)
-	{
-		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " failed /login");
-		sendToClient(client, "/login : Invalid arguments");
-		return ;
-	}
-
+		return (LogMsgClient(client, LOGIN_CL_INV_ARG, LogType::ERROR, LOGIN_LOG_FAILED(client.getId())));
+		
 	if (client.getLogin() == true)
-	{
-		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " used /login : Already connected");
-		sendToClient(client, "/login : You're already connected");
-		return ; // add logger + msg already connected
-	}
+		return (LogMsgClient(client, LOGIN_CL_ALRD_CO, LogType::ERROR, LOGIN_LOG_ALRD_CO(client.getId())));
 
-	if (this->findClientByNick(args[1]) != NULL)
-	{
-		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " used /login : Can't used this name");
-		sendToClient(client, "/login : Choosed another name");
-		return ; //error
-	}
-
-	else if (_db.userExists(args[1]) == false)
+	if (_db.userExists(args[1]) == false)
 		_db.addUser(args[1], args[2]);
 
 	else if (_db.passMatch(args[1], args[2]) == false)
-	{
-		_logger->log(LogType::ERROR, std::to_string(client.getId()) + " used /login : Wrong password");
-		sendToClient(client, "/login : Wrong password");
-		return ;
-	}
+		return (LogMsgClient(client, LOGIN_CL_ERR_DB, LogType::ERROR, LOGIN_LOG_ERR_DB(client.getId())));
+
 
 	client.setLogStatus(true);
 	client.setName(args[1]);
-	_logger->log(LogType::INFO, std::to_string(client.getId()) + " used /login : Connexion successfull");
-	sendToClient(client, "/login : Connexion successfull");
+
+	LogMsgClient(client, LOGIN_CL_SUCCESS, LogType::ERROR, LOGIN_LOG_SUCCESS(client.getId()));
 }
 
 void		Server::quit(Client &client, std::deque<std::string>)

@@ -89,6 +89,8 @@ class Server
 		std::string sendToChannel(Client &sender, std::string channel, std::string msgToSend);
 		void		sendToClient(Client &client, std::string receiver, std::string msgToSend);
 
+		void		LogMsgClient(Client &client, std::string msg_cl, LogType type, std::string log_msg);
+
 		// void		sendToAllClient(Client &client, std::string new_nickname);
 
 	public :

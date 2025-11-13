@@ -74,9 +74,7 @@ void Server::sendToClient(std::string receiver, std::string msgToSend)
 
 void Server::sendToClient(Client &client, std::string msgToSend)
 {
-	std::string	msg = MSGSEND(client.getName(), msgToSend);
-	
-	send(client.getSocketFd(), msg.c_str(), msg.size(), 0);
+	send(client.getSocketFd(), msgToSend.c_str(), msgToSend.size(), 0);
 }
 
 

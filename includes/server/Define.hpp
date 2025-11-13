@@ -3,6 +3,25 @@
 
 //LOGIN
 
+/*LOGGER*/
+# define LOGIN_CMD(cl_id) std::to_string(cl_id) + " used /login"
+
+# define LOGIN_LOG_FAILED(cl_id) std::to_string(cl_id) + " failed /login"
+
+# define LOGIN_LOG_ALRD_CO(cl_id) std::to_string(cl_id) + " used /login : Already connected"
+
+# define LOGIN_LOG_ERR_DB(cl_id) std::to_string(cl_id) + " used /login : Already connected"
+
+# define LOGIN_LOG_SUCCESS(cl_id) std::to_string(cl_id) + " used /login : Connexion successfull"
+
+/*CLIENT*/
+# define LOGIN_CL_INV_ARG "/login : Invalid arguments\n\r"
+
+# define LOGIN_CL_ALRD_CO "/login : You're already connected\n\r"
+
+# define LOGIN_CL_ERR_DB "/login : Choosed another name or wrong password\n\r"
+
+# define LOGIN_CL_SUCCESS "/login : Connexion successfull\n\r"
 
 //PRIVMSG
 # define ERR_ALREADYREGISTRED ":127.0.0.1 462 :You may not reregister\r\n"
