@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:46:19 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 08:39:25 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 08:56:53 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,9 @@ void	Server::runtime()
 	bool	new_client = false;
 	initialize_poll_fds(fds);
 
-	int	nb_fd = poll(fds, _client_list.size() + 1, -1);
+	_pollFD = poll(fds, _client_list.size() + 1, -1);
 
-	if (nb_fd == -1 && errno == EINTR)
+	if (_pollFD == -1 && errno == EINTR)
 		return;
 
 	if ((fds[0].revents & POLLIN) != 0)
@@ -383,6 +383,13 @@ void	Server::setup(Tintin_reporter &logger)
 	this->_serverAddress.sin_port = htons(7002);
 	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
 
+	int yes = 1;
+	if (setsockopt(_server_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+	{
+		close(_server_socket);
+		throw std::runtime_error(strerror(errno));
+	}
+
 	if (bind(this->_server_socket, (struct sockaddr*)&this->_serverAddress, sizeof(this->_serverAddress)) == -1)
 	{
 		close(_server_socket);
@@ -408,6 +415,8 @@ void	Server::stop()
 		delete (_channel);
 	if (_server_socket != -1)
 		close(_server_socket);
+	if (_pollFD != -1)
+		close(_pollFD);
 	_logger->log(LogType::INFO, "Server closed.");
 }
 

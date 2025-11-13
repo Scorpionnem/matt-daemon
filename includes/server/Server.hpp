@@ -46,6 +46,7 @@ class Server
 {
 	private :
 		int						_server_socket = -1;
+		int						_pollFD = -1;
 		sockaddr_in 			_serverAddress;
 		std::vector<Client*>	_client_list;
 		Channel					*_channel = NULL;
