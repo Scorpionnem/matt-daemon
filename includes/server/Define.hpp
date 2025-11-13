@@ -10,7 +10,7 @@
 
 # define LOGIN_LOG_ALRD_CO(cl_id) std::to_string(cl_id) + " used /login : Already connected"
 
-# define LOGIN_LOG_ERR_DB(cl_id) std::to_string(cl_id) + " used /login : Already connected"
+# define LOGIN_LOG_ERR_DB(cl_id) std::to_string(cl_id) + " used /login : Name already choosed or bad password"
 
 # define LOGIN_LOG_SUCCESS(cl_id) std::to_string(cl_id) + " used /login : Connexion successfull"
 

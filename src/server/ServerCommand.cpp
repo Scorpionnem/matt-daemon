@@ -109,7 +109,7 @@ void	Server::login(Client &client, std::deque<std::string> args)
 	client.setLogStatus(true);
 	client.setName(args[1]);
 
-	LogMsgClient(client, LOGIN_CL_SUCCESS, LogType::ERROR, LOGIN_LOG_SUCCESS(client.getId()));
+	LogMsgClient(client, LOGIN_CL_SUCCESS, LogType::INFO, LOGIN_LOG_SUCCESS(client.getId()));
 }
 
 void		Server::quit(Client &client, std::deque<std::string>)
