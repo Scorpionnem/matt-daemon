@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 08:37:07 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 09:59:41 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	MattDaemon::start()
 			_server.runtime();
 		} catch (const std::exception &e) {
 			_logger.log(LogType::ERROR, std::string(e.what()));
+			break ;
 		}
 	}
 	_stop();
