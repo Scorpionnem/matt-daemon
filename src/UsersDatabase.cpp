@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 14:19:16 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 13:30:23 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/13 14:50:56 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,10 @@ bool	UsersDatabase::passMatch(const std::string &user, const std::string &pass)
 
 void	UsersDatabase::loadDB()
 {
-	std::ifstream	file(USERSDB_FILE);
+	std::ifstream	file(USERDB_PATH USERSDB_FILE);
 	if (!file.is_open())
 		return ;
-	
+
 	std::string	line;
 
 	while (getline(file, line))
