@@ -109,6 +109,7 @@ bool	Server::addClient()
 		if (this->_client_list.size() >= NB_MAX_CLIENTS)
 		{
 			close(clientSocket);
+			_logger->log(LogType::ERROR, "User can't join : Too many clients");
 			return (false);
 		}
 		else

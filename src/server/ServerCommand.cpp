@@ -50,7 +50,6 @@ void	Server::sendAll(std::string msg_cl)
 	}
 }
 
-
 void		Server::quit(Client &client, std::deque<std::string>)
 {
 	this->sendAll("Server closing...\n\r");

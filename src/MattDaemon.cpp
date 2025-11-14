@@ -119,8 +119,8 @@ void	MattDaemon::_unlock()
 // DAEMONIZATION
 void	MattDaemon::_setupSignals()
 {
-	signal(SIGINT, _sigHandler);
 	signal(SIGHUP, _sigHandler);
+	signal(SIGINT, _sigHandler);
 	signal(SIGQUIT, _sigHandler);
 	signal(SIGILL, _sigHandler);
 	signal(SIGTRAP, _sigHandler);
