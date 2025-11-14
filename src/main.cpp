@@ -6,11 +6,11 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:06:35 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/14 08:24:44 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 08:51:47 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define PROD 0
+#define PROD 1
 
 #include "Tintin_reporter.hpp"
 #include "MattDaemon.hpp"
