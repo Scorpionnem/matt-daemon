@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/12 15:47:44 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 08:24:30 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,12 @@
 # include <sys/stat.h>
 
 // Path to log directory
-# define VAR_LOG_PATH			"/var/log/"
+# if PROD == 1
+#  define VAR_LOG_PATH			"/var/log/"
+# else
+#  define VAR_LOG_PATH			""
+# endif
+
 // Path to matt_daemon log directory inside of logs
 # define MATT_DAEMON_LOG_PATH	"matt_daemon/"
 // Name of the log file without the timestamp

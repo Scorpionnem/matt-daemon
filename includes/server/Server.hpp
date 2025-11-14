@@ -3,6 +3,13 @@
 
 # define NB_MAX_CLIENTS 3
 
+
+# if PROD == 1
+#  define SERVER_PORT 4242
+# else
+#  define SERVER_PORT 7002
+# endif
+
 # include "Client.hpp"
 # include <arpa/inet.h>
 # include <cstring>

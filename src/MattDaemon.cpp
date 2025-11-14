@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 09:59:41 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 08:19:54 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,12 +119,38 @@ void	MattDaemon::_unlock()
 // DAEMONIZATION
 void	MattDaemon::_setupSignals()
 {
-	signal(SIGABRT, _sigHandler);
 	signal(SIGINT, _sigHandler);
+	signal(SIGHUP, _sigHandler);
 	signal(SIGQUIT, _sigHandler);
-	signal(SIGTSTP, _sigHandler);
-	signal(SIGCONT, _sigHandler);
+	signal(SIGILL, _sigHandler);
+	signal(SIGTRAP, _sigHandler);
+	signal(SIGABRT, _sigHandler);
+	signal(SIGIOT, _sigHandler);
+	signal(SIGBUS, _sigHandler);
+	signal(SIGFPE, _sigHandler);
+	signal(SIGUSR1, _sigHandler);
+	signal(SIGSEGV, _sigHandler);
+	signal(SIGUSR2, _sigHandler);
+	signal(SIGPIPE, _sigHandler);
+	signal(SIGALRM, _sigHandler);
 	signal(SIGTERM, _sigHandler);
+	signal(SIGSTKFLT, _sigHandler);
+	signal(SIGCLD, _sigHandler);
+	signal(SIGCHLD, _sigHandler);
+	signal(SIGCONT, _sigHandler);
+	signal(SIGTSTP, _sigHandler);
+	signal(SIGTTIN, _sigHandler);
+	signal(SIGTTOU, _sigHandler);
+	signal(SIGURG, _sigHandler);
+	signal(SIGXCPU, _sigHandler);
+	signal(SIGXFSZ, _sigHandler);
+	signal(SIGVTALRM, _sigHandler);
+	signal(SIGPROF, _sigHandler);
+	signal(SIGWINCH, _sigHandler);
+	signal(SIGPOLL, _sigHandler);
+	signal(SIGIO, _sigHandler);
+	signal(SIGPWR, _sigHandler);
+	signal(SIGSYS, _sigHandler);
 	_logger.log(LogType::INFO, "Now catching signals");
 }
 

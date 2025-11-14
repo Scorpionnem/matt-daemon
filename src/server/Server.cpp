@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 10:46:19 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 16:21:01 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 08:22:38 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,7 +270,7 @@ void	Server::setup(Tintin_reporter &logger)
 	if (this->_server_socket == -1)
 		throw std::runtime_error(strerror(errno));
 	this->_serverAddress.sin_family = AF_INET;
-	this->_serverAddress.sin_port = htons(4242);
+	this->_serverAddress.sin_port = htons(SERVER_PORT);
 	this->_serverAddress.sin_addr.s_addr = INADDR_ANY;
 
 	int yes = 1;
