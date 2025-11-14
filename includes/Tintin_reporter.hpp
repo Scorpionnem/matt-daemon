@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/14 08:58:19 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 14:14:44 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 # define MATT_DAEMON_LOG_PATH	"matt_daemon/"
 // Name of the log file without the timestamp
 # define LOG_PATH				"matt_daemon_"
+# define LOG_PATH_NOTS				"matt_daemon"
 // Extension format of the log file
 # define LOG_EXTENSION			".log"
 
@@ -91,6 +92,7 @@ class	Tintin_reporter
 		//	Returns the timestamp in this format D_M_Y_H_m_s
 		std::string	_getLogFileTimeString();
 		
+		std::ofstream	_timestampFile;
 		std::ofstream	_file;
 };
 

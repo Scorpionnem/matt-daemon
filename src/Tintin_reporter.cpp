@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 13:35:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 16:16:31 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 14:16:05 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 void	Tintin_reporter::init()
 {
-	std::string logFilePath = VAR_LOG_PATH MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
+	std::string timestampLogFilePath = VAR_LOG_PATH MATT_DAEMON_LOG_PATH LOG_PATH + _getLogFileTimeString() + LOG_EXTENSION;
+	std::string logFilePath = VAR_LOG_PATH MATT_DAEMON_LOG_PATH LOG_PATH_NOTS LOG_EXTENSION;
 
 	if (!std::filesystem::exists(VAR_LOG_PATH MATT_DAEMON_LOG_PATH))
 		std::filesystem::create_directories(VAR_LOG_PATH MATT_DAEMON_LOG_PATH);
@@ -23,6 +24,10 @@ void	Tintin_reporter::init()
 	_file.open(logFilePath, std::ios::app);
 	if (!_file.is_open())
 		throw std::runtime_error("Failed to open log file: " + logFilePath);
+
+	_timestampFile.open(timestampLogFilePath, std::ios::app);
+	if (!_timestampFile.is_open())
+		throw std::runtime_error("Failed to open log file: " + timestampLogFilePath);
 }
 
 
@@ -61,9 +66,15 @@ void	Tintin_reporter::log(LogType type, const std::string &str)
 void	Tintin_reporter::_log(const std::string &str)
 {
 	if (str.find('\n') != str.npos)
+	{
+		_timestampFile << _getLogTimeString() << " " << str << std::flush;
 		_file << _getLogTimeString() << " " << str << std::flush;
+	}
 	else
+	{
+		_timestampFile << _getLogTimeString() << " " << str << std::endl;
 		_file << _getLogTimeString() << " " << str << std::endl;
+	}
 }
 
 Tintin_reporter::Tintin_reporter() {}
