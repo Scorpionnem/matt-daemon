@@ -6,7 +6,7 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 14:37:51 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/14 08:39:33 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 08:49:55 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,13 @@ bool	MattDaemon::_init()
 MattDaemon::~MattDaemon()
 {
 	_unlock();
+	_logger.close();
 }
 
 void	MattDaemon::_stop()
 {
 	_server.stop();
 	_logger.log(LogType::INFO, "Stopping...");
-	_logger.close();
 }
 
 
@@ -114,12 +114,15 @@ void	MattDaemon::_lock()
 
 void	MattDaemon::_unlock()
 {
-	close(_lockFD);
-
-	if (!_isDaemon)
-		return ;
-	remove(LOCK_FILE);
-	_logger.log(LogType::INFO, "Unlocked " LOCK_FILE);
+	if (_isDaemon)
+	{
+		flock(_lockFD, LOCK_UN);
+		close(_lockFD);
+		remove(LOCK_FILE);
+		_logger.log(LogType::INFO, "Unlocked " LOCK_FILE);
+	}
+	else
+		close(_lockFD);
 }
 
 
