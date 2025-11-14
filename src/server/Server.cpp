@@ -233,7 +233,7 @@ void	Server::execCommand(Command cmd, std::deque<std::string> args, Client &clie
         &Server::privMsg,
         &Server::msg
     };
-	if (cmd != Command::HELP && cmd != Command::QUIT && cmd != Command::LOGIN && client.getLogin() == 0)
+	if (cmd != Command::HELP && cmd != Command::QUIT && cmd != Command::UNKNOW && cmd != Command::LOGIN && client.getLogin() == 0)
 		return (LogMsgClient(client, CL_NOT_LOGIN, LogType::ERROR, LOG_NOT_LOGIN(client.getId())));
 
 	for (int j = 0; j <= 6; j++)
@@ -241,9 +241,10 @@ void	Server::execCommand(Command cmd, std::deque<std::string> args, Client &clie
 		if (cmd == cmds[j])
 		{
 			(this->*functptr[j])(client, args);
-			break ;
+			return ;
 		}
 	}
+	LogMsgClient(client, CL_CMD_UNKNOW, LogType::ERROR, LOG_CMD_UNKNOW(client.getId()));
 }
 
 void	Server::commandsParsing(Client &client, std::string input)

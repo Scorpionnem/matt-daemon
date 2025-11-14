@@ -5,7 +5,11 @@
 
 # define LOG_NOT_LOGIN(cl_id) std::to_string(cl_id) + " not connected"
 
+# define LOG_CMD_UNKNOW(cl_id) std::to_string(cl_id) + " command doesn't exist"
+
 # define CL_NOT_LOGIN "Please login first. (/login <user> <pass>)\n\r"
+
+# define CL_CMD_UNKNOW "Bad command. You can use /help.\n\r"
 
 //LOGIN
 
