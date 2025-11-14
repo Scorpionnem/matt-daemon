@@ -6,12 +6,14 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 14:18:09 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/13 16:16:45 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 08:58:24 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef USERSDATABASE_HPP
 # define USERSDATABASE_HPP
+
+#include "prod.hpp"
 
 # include <iostream>
 # include <iomanip>

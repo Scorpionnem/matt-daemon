@@ -6,12 +6,14 @@
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/21 18:07:01 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/14 08:24:30 by mbatty           ###   ########.fr       */
+/*   Updated: 2025/11/14 08:58:19 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TINTIN_REPORTER_HPP
 # define TINTIN_REPORTER_HPP
+
+#include "prod.hpp"
 
 # include <fstream>
 # include <iostream>

@@ -1,31 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   prod.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbatty <mbatty@student.42angouleme.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/21 18:06:35 by mbatty            #+#    #+#             */
-/*   Updated: 2025/11/14 08:58:27 by mbatty           ###   ########.fr       */
+/*   Created: 2025/11/14 08:57:37 by mbatty            #+#    #+#             */
+/*   Updated: 2025/11/14 08:57:51 by mbatty           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "prod.hpp"
+#ifndef PROD_HPP
+# define PROD_HPP
 
-#include "Tintin_reporter.hpp"
-#include "MattDaemon.hpp"
+# ifndef PROD
+#  define PROD 1
+# endif
 
-int	main(void)
-{
-	#if PROD == 1
-		if (getuid() != 0)
-		{
-			std::cerr << "Program can only be run as root!" << std::endl;
-			return (1);
-		}
-	#endif
-
-	MattDaemon	mattDaemon;
-
-	mattDaemon.start();
-}
+#endif
