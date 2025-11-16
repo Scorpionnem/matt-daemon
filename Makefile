@@ -48,7 +48,7 @@ fclean: clean
 run: $(NAME)
 	./$(NAME)
 
-.PHONY: all clean fclean run re
+.PHONY: all clean fclean run re bonus
 
 -include $(DEPS)
 -include $(DEPS_BONUS)
